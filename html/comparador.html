@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poké - Comparar Pokémons</title>
+    <link rel="stylesheet" href="../css/comparador.css  ">
+    <link rel="stylesheet" href="../css/styleguide.css">
+    <link rel="icon" type="imagem/jpg" href="../assets/icone1.png">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <a class="nav-item" href="pagina-inicial.html">
+                <div class="nav-icon icon-1"></div>
+                <span>Página Inicial</span>
+            </a>
+            <a class="nav-item" href="pokedex.html">
+                <div class="nav icon-2"></div>
+                <span>Pokédex</span>
+            </a>
+            <a class="nav-item" href="">
+                <div class="nav icon-3"></div>
+                <span>Comparar</span>
+            </a>
+            <a class="login-btn">Fazer login</a>
+        </nav>
+    </header>
+    
+    <!-- Background Stripes -->
+    <div class="background-container">
+        <div class="stripe stripe-yellow"></div>
+        <div class="stripe stripe-blue"></div>
+        <div class="stripe stripe-red"></div>
+    </div>
+    <!-- Title -->
+    <h1 class="page-title">Compare Pokémons</h1>
+
+    <!-- Main Content -->
+
+    <div class="main-content">
+        <!-- Search Bar -->
+        <div class="search-bar">
+            <input type="text" id="pokemonSearch" placeholder="Digite o nome de um Pokémon..." class="search-input"/>
+            <button id="addPokemonBtn" class="add-btn">Adicionar</button>
+        </div>
+
+        <!-- Área de comparação -->
+        <div class="compare-container">
+            <div class="pokemon-card" id="pokemon1">
+                <p class="placeholder-text">Selecione um Pokémon</p>
+            </div>
+            <div class="divider-vertical"></div>
+            <div class="pokemon-card" id="pokemon2">
+                <p class="placeholder-text">Selecione um Pokémon</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-left">
+            <div class="footer-brand">PokéCompanion</div>
+            <div class="footer-links">
+                <h4>Links</h4>
+                <ul>
+                    <li>Pagina Inicial</li>
+                    <li>Pokédex</li>
+                    <li>Comparar</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-divider"></div>
+        
+        <div class="footer-right">
+            <h3>Sobre</h3>
+            <p class="footer-description">
+                Este site foi desenvolvido como parte de um projeto acadêmico de Engenharia de Software, 
+                com objetivo de praticar prototipagem e desenvolvimento web.
+            </p>
+            <p class="footer-copyright">
+                PokéCompanion &copy; 2025<br>
+                Projeto acadêmico — Engenharia de Software
+            </p>
+        </div>
+    </footer>
+    <script src="../js/comparador.js"></script>
+</body>
+</html>
+
