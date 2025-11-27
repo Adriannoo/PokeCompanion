@@ -1,0 +1,384 @@
+/* ===== BASE ===== */
+body {
+    background-color: #000;
+    min-height: 100vh;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+}
+/* === === === */
+
+/* ===== HEADER ===== */
+.header {
+    margin: auto;
+    padding: calc(40 / 1080 * 100vh) calc(48 / 1920 * 100vw);
+    background-color: var(--cinza-padrao);
+    box-shadow: 0 calc(4 / 1080 * 100vh) calc(4 / 1080 * 100vh) rgba(0, 0, 0, 0.25);
+}
+
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: min(1440px, 90%);
+    margin: auto;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    height: calc(80 / 1080 * 100vh);
+    cursor: pointer;
+    gap: 8px;
+}
+
+/* ===== ÍCONES ===== */
+.icon-1, .icon-2, .icon-3 {
+    width: clamp(40px, calc(80 / 1920 * 100vw), 80px);
+    height: clamp(40px, calc(80 / 1080 * 100vh), 80px);
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+}
+
+/* Fonte Header */
+.nav-item span {
+    font-family: "Righteous", sans-serif;
+    color: white;
+    text-shadow: 4px 4px 4px rgba(0,0,0,0.25);
+    font-size: clamp(20px, 2.5vw, 48px);
+    font-weight: 400;
+    -webkit-text-stroke: 0.2em black;
+    paint-order: stroke fill;
+}
+
+/* ===== BOTÃO LOGIN ===== */
+.login-btn {
+    padding: clamp(16px, calc(20 / 1080 * 100vh), 28px) clamp(16px, calc(28 / 1920 * 100vw), 32px);
+    font-family: "Righteous", sans-serif;
+    font-size: clamp(16px, 1.5vw, 32px);
+    color: var(--branco-full);
+    background-color: var(--verde-campo);
+    border: calc(3 / 1920 * 100vw) solid black;
+    border-radius: calc(24 / 1920 * 100vw);
+    box-shadow: 0 calc(4 / 1080 * 100vh) calc(4 / 1080 * 100vh) rgba(0,0,0,0.25);
+    cursor: pointer;
+    transition: 0.3s ease;
+    -webkit-text-stroke: 0.2em black;
+    paint-order: stroke fill;
+}
+.login-btn:hover {
+    transform: scale(1.05);
+}
+/* === === === */
+
+/* ===== BACKGROUND ===== */
+.background-container {
+    position: absolute;
+    width: 100%;
+    height: 141vh;
+    background-color: #000;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.stripe {
+    position: absolute;
+    width: calc(2200 / 1920 * 100vw);
+    transform: rotate(-20deg);
+    border: calc(10 / 1920 * 100vw) solid #fff;
+}
+
+.yellow-stripe {
+    background-color: var(--amarelo-dourado);
+    top: calc(10 / 1080 * 100vh);
+    height: calc(300 / 1080 * 100vh);
+}
+
+.blue-stripe {
+    background-color: var(--azul-cerulean);
+    top: calc(370 / 1080 * 100vh);
+    height: calc(500 / 1080 * 100vh);
+}
+
+.red-stripe {
+    background-color: var(--vermelho-boston);
+    bottom: calc(250 / 1080 * 110vh);
+    height: calc(300 / 1080 * 100vh);
+}
+/* === === === */
+
+/* Main Content */
+.main-content {
+    /* position: relative; */
+    z-index: 1;
+    width: 100%;
+    min-height: calc(1800 / 1920 * 100vh);
+    bottom: calc(200 / 1920 * 100vh);
+    margin-bottom: calc(100 / 1080 * 100vh); /* adiciona espaço pro footer */
+}
+/* === === === */
+
+/* ===== BLASTOISE ===== */
+.blastoise-wrap {
+    position: absolute;
+    right: calc(100 / 1920 * 100vw);
+    bottom: calc(50 / 1080 * 100vh);
+    width: clamp(300px, calc(760 / 1920 * 100vw), 760px);
+    z-index: 30;
+    pointer-events: none;
+}
+
+.blastoise-gif {
+    width: 100%;
+    image-rendering: pixelated;
+    object-fit: contain;
+    transform: translateY(calc(-30 / 1080 * 100vh));
+    filter: drop-shadow(0 0 5px black);
+}
+
+.blastoise-base {
+    position: absolute;
+    bottom: calc(5 / 1080 * 100vh);
+    right: calc(50 / 1920 * 100vw);
+    width: 80%;
+    height: calc(200 / 1080 * 100vh);
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 50% / 50%;
+    box-shadow: 0 20px 10px rgba(0,0,0,0.75);
+    z-index: 0;
+}
+/* === === === */
+
+/* ===== FRAME SOBRE ===== */
+.frame-sobre {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    padding: calc(30 / 1080 * 100vh);
+    left: 0;
+    top: calc(220 / 1080 * 100vh);
+    width: clamp(300px, calc(820 / 1920 * 100vw), 820px);
+    height: clamp(300px, calc(620 / 1080 * 100vh), 620px);
+    background: rgba(217, 217, 217, 0.95);
+    border-radius: 0 calc(60 / 1920 * 100vw) calc(60 / 1920 * 100vw) 0;
+    border: calc(5 / 1920 * 100vw) solid black;
+    border-left: 0;
+    box-shadow: 5px 10px 4px rgba(0,0,0,0.25);
+    overflow: hidden;
+}
+
+.frame-sobre-text {
+    display: flex;
+    justify-content: center;
+    font-family: Fredoka;
+    color: var(--branco-full);
+    text-align: center;
+    text-shadow: 0 0 20px rgba(0, 0, 0, 0.30);
+    paint-order: stroke fill;
+    -webkit-text-stroke: 0.3vw black;
+    font-size: clamp(26px, 4vw, 52px);
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+    display: flex;
+    position: relative;
+    z-index: 0;
+    width: 100%;
+    min-height: calc(300 / 1080 * 100vh);
+    background: rgba(0, 0, 0, 0.9);
+    flex-wrap: wrap;
+    padding: calc(40 / 1080 * 100vh) calc(80 / 1920 * 100vw);
+    margin-top: 0;
+}
+
+.footer-left, .footer-right {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(10px, 2vh, 20px);
+}
+
+.footer-logo {
+    width: clamp(40px, calc(80 / 1920 * 100vw), 80px);
+    height: clamp(40px, calc(80 / 1080 * 100vh), 80px);
+    border-radius: 50%;
+    opacity: 0.7;
+    box-shadow: 0 4px 4px rgba(0,0,0,0.25);
+}
+
+.footer-brand {
+    font-family: 'Righteous', sans-serif;
+    font-size: clamp(20px, 2.5vw, 54px);
+    color: white;
+    opacity: 0.7;
+}
+
+.footer-links h4 {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: clamp(14px, 1.5vw, 24px);
+    color: white;
+    opacity: 0.7;
+    text-decoration: underline;
+    margin: calc(10 / 1920 * 100vw);
+}
+
+.footer-links ul {
+    list-style: disc;
+    padding-left: 1.5rem;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 400;
+    font-size: clamp(14px, 1.5vw, 24px);
+    color: white;
+    opacity: 0.7;
+}
+
+.footer-divider {
+    width: 1px;
+    height: calc(320 / 1080 * 100vh);
+    background: rgba(255, 255, 255, 0.7);
+    margin: 0 calc(60 / 1920 * 100vw);
+}
+
+.footer-right h3 {
+    font-family: 'Righteous', sans-serif;
+    font-size: clamp(24px, 2.5vw, 54px);
+    color: white;
+    opacity: 0.7;
+    margin: 0px;
+}
+
+.footer-description,
+.footer-copyright {
+    display: flex;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 400;
+    font-size: clamp(14px, 1vw, 20px);
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.4;
+    max-width: 500px;
+}
+/* === === === */
+
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 1440px) {
+    .frame-sobre { top: 18vh; }
+}
+
+@media (max-width: 1024px) {
+    .nav { flex-wrap: wrap; gap: 1rem; }
+    .frame-sobre {
+        position: relative;
+        margin: 4rem auto;
+        left: auto;
+        top: auto;
+        width: 90%;
+        border-radius: 20px;
+    }
+}
+
+/* Container geral do formulário */
+.login-box {
+    position: absolute;
+    top: 160px;              
+    right: 60px;             
+    width: 520px;            
+    padding: 50px;
+    /* Fundo estilo “glass/dark card” */
+    background: rgba(30, 30, 35, 0.85);
+    backdrop-filter: blur(6px);
+
+    /* Bordas suaves e arredondadas como no exemplo */
+    border: 1.5px solid rgba(255, 255, 255, 0.35);
+    border-radius: 18px;
+
+    /* Sombra suave */
+    box-shadow: 0 0 25px rgba(0,0,0,0.25);
+
+    color: #e5e5e5;
+    z-index: 999;
+}
+
+/* Labels */
+.login-box label {
+    display: block;
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: #e5e5e5;
+}
+
+/* Inputs estilo clean */
+.login-box input[type="text"],
+.login-box input[type="password"] {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 20px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    outline: none;
+    margin-bottom: 22px;
+}
+
+/* Botão moderno */
+.login-box button {
+    padding: 10px 28px;
+    width: 100%;
+    font-size: 15px;
+    font-weight: 600;
+
+    background: #FFDE00;
+    color: rgb(0, 0, 0);
+    border: none;
+    border-radius: 10px;
+
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.login-box button:hover {
+    background: #2563eb;
+}
+
+/* Link: esqueceu sua senha */
+.login-box .forgot {
+    text-align: right;
+    margin-top: 10px;
+}
+
+.login-box .forgot a {
+    font-size: 20px;
+    color: #FFDE00;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.login-box .forgot a:hover {
+    color: white;
+}
+
+.login-box .register {
+    text-align: left;
+    margin-top: 10px;
+}
+
+.login-box .register a {
+    font-size: 20px;
+    color: blue;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.login-box .register a:hover {
+    color: white;
+}
