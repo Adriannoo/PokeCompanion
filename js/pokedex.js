@@ -157,6 +157,15 @@ document.addEventListener("DOMContentLoaded", () => {
         card.appendChild(imgWrap);
         card.appendChild(info);
 
+        // comportamento: ao clicar no card, navegar para a página de detalhes
+        card.dataset.pokemonId = p.id;
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', () => {
+            const id = encodeURIComponent(p.id);
+            // página de detalhes no mesmo diretório HTML
+            window.location.href = `sobre-pokemon.html?id=${id}`;
+        });
+
         frag.appendChild(card);
         });
 
