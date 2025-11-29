@@ -261,34 +261,92 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Carrega N pokémons iniciais aleatórios (para variar a lista a cada reload)
+    // Sequential loader: load initial range starting at 1 and support "load more"
+    let nextId = 1;
+    let totalCount = null;
+
     async function loadInitial(n = 20) {
         pokemons = [];
-        // escolhe N ids únicos aleatórios entre 1 e total
-        const total = await getTotalPokemonCount();
-        const ids = new Set();
-        while (ids.size < Math.min(n, total)) {
-            const id = Math.floor(Math.random() * total) + 1;
-            ids.add(id);
-        }
-        const idArray = Array.from(ids);
+        totalCount = await getTotalPokemonCount();
+        nextId = 1;
+        await loadNext(n);
+    }
 
-        // busca em paralelo em lotes para performance
+    async function loadNext(n = 20) {
+        if (totalCount === null) totalCount = await getTotalPokemonCount();
+        if (nextId > totalCount) return; // nothing more
+
+        const startId = nextId;
+        const endId = Math.min(totalCount, nextId + n - 1);
+        const ids = [];
+        for (let id = startId; id <= endId; id++) ids.push(id);
+
+        // fetch in batches
         const batchSize = 8;
-        for (let start = 0; start < idArray.length; start += batchSize) {
-            const end = Math.min(idArray.length - 1, start + batchSize - 1);
+        for (let start = 0; start < ids.length; start += batchSize) {
+            const end = Math.min(ids.length - 1, start + batchSize - 1);
             const promises = [];
-            for (let i = start; i <= end; i++) promises.push(fetchPokemon(idArray[i]));
+            for (let i = start; i <= end; i++) promises.push(fetchPokemon(ids[i]));
             const results = await Promise.all(promises);
             results.forEach((r) => r && pokemons.push(r));
         }
 
+        nextId = endId + 1;
         sortPokemonsInMemory();
-        renderPokemons(pokemons);
+        applyTypeFilterAndRender();
+        // update load-more button state
+        const btn = document.querySelector('.load-more-btn');
+        if (btn) {
+            if (nextId > totalCount) {
+                btn.disabled = true;
+                btn.textContent = 'Todos carregados';
+            } else {
+                btn.disabled = false;
+                btn.textContent = 'Carregar mais';
+            }
+        }
     }
 
     // INICIALIZAÇÃO
     setupSortDropdown();
+
+    // filtro por tipo (sidebar)
+    let currentTypeFilter = null;
+    function applyTypeFilterAndRender() {
+        let list = pokemons.slice();
+        if (currentTypeFilter) {
+            list = list.filter(p => Array.isArray(p.types) && p.types.includes(currentTypeFilter));
+        }
+        sortPokemonsInMemory();
+        renderPokemons(list);
+    }
+
+    // configura eventos dos type-items na sidebar (se existirem)
+    function setupTypeFilter() {
+        const items = document.querySelectorAll('.type-item');
+        if (!items || items.length === 0) return;
+        items.forEach(it => {
+            it.addEventListener('click', () => {
+                const icon = it.querySelector('.type-icon');
+                if (!icon) return;
+                // pega a primeira classe além de 'type-icon'
+                const cls = Array.from(icon.classList).find(c => c !== 'type-icon');
+                if (!cls) return;
+                if (currentTypeFilter === cls) {
+                    currentTypeFilter = null; // toggle off
+                    it.classList.remove('active');
+                } else {
+                    // remove active de todos e ativa só este
+                    document.querySelectorAll('.type-item.active').forEach(a => a.classList.remove('active'));
+                    currentTypeFilter = cls;
+                    it.classList.add('active');
+                }
+                applyTypeFilterAndRender();
+            });
+        });
+    }
+
+    setupTypeFilter();
 
     if (searchBtn) searchBtn.addEventListener("click", onSearchClick);
     // permite pesquisar com Enter
@@ -298,10 +356,18 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // carrega os iniciais
-    loadInitial(4).catch((err) => {
+    // carrega os iniciais (sequencial, começando por 1)
+    loadInitial(20).catch((err) => {
         console.error("Erro carregando pokemons iniciais:", err);
     });
+
+    // configura botão carregar mais (se existir)
+    const loadMoreBtn = document.querySelector('.load-more-btn');
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', () => {
+            loadNext(20).catch(err => console.error('Erro ao carregar mais:', err));
+        });
+    }
 
     // para debug: expõe no window
     window.__pcdebug = {
