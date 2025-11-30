@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Poké - Comparar Pokémons</title>
-    <link rel="stylesheet" href="../css/comparador.css  ">
+    <link rel="stylesheet" href="../css/comparador.css">
     <link rel="stylesheet" href="../css/styleguide.css">
     <link rel="icon" type="imagem/jpg" href="../assets/icone1.png">
 </head>
@@ -16,18 +16,27 @@
                 <div class="nav-icon icon-1"></div>
                 <span>Página Inicial</span>
             </a>
+
             <a class="nav-item" href="pokedex.html">
                 <div class="nav icon-2"></div>
                 <span>Pokédex</span>
             </a>
-            <a class="nav-item" href="">
+
+            <a class="nav-item">
                 <div class="nav icon-3"></div>
                 <span>Comparar</span>
             </a>
+
+            <!-- BOTÃO LOGIN / NOME DO USUÁRIO -->
             <a class="login-btn" href="login.html">
                 <div class="nav icon-4"></div>
                 <span>Fazer login</span>
             </a>
+
+            <!-- MENU FLUTUANTE DO USUÁRIO -->
+            <div class="user-menu" id="userMenu" style="display:none;">
+                <button id="logoutBtn">Sair</button>
+            </div>
         </nav>
     </header>
     
@@ -37,12 +46,13 @@
         <div class="stripe stripe-blue"></div>
         <div class="stripe stripe-red"></div>
     </div>
+
     <!-- Title -->
     <h1 class="page-title">Compare Pokémons</h1>
 
     <!-- Main Content -->
-
     <div class="main-content">
+
         <!-- Search Bar -->
         <div class="search-bar">
             <input type="text" id="pokemonSearch" placeholder="Digite o nome de um Pokémon..." class="search-input"/>
@@ -54,7 +64,9 @@
             <div class="pokemon-card" id="pokemon1">
                 <p class="placeholder-text">Selecione um Pokémon</p>
             </div>
+
             <div class="divider-vertical"></div>
+
             <div class="pokemon-card" id="pokemon2">
                 <p class="placeholder-text">Selecione um Pokémon</p>
             </div>
@@ -89,7 +101,7 @@
             </p>
         </div>
     </footer>
+
     <script src="../js/comparador.js"></script>
 </body>
 </html>
-

@@ -25,6 +25,10 @@
                 <span>Comparar</span>
             </a>
             <a class="login-btn">Fazer login</a>
+            
+            <div class="user-menu" id="userMenu" style="display:none;">
+                <button id="logoutBtn">Sair</button>
+            </div>
         </nav>
     </header>
     
@@ -35,22 +39,33 @@
         <div class="stripe red-stripe"></div>
     </div>
 
-    <!-- Tela de Login -->
-    <div class="login-box">
-        <label>Usuário:</label>
-        <input type="text" name="usuario">
+    <div class="login-box" id="loginBox">
+        <h2 id="authTitle">Login</h2>
 
-        <label>Senha:</label>
-        <input type="password" name="senha">
+        <form id="authForm">
 
-        <button>Entrar</button>
+            <!-- Campo Email (somente no registro) -->
+            <div id="emailField" style="display:none;">
+                <label for="email">E-mail:</label>
+                <input type="email" id="email">
+            </div>
 
-        <div class="register">
-            <span>Não tem uma conta?</span>
-            <a href="#">Registre-se</a>
+            <label for="username">Usuário:</label>
+            <input type="text" id="username" required>
 
-        <div class="forgot">
-            <a href="#">Esqueceu sua senha?</a>
+            <label for="password">Senha:</label>
+            <input type="password" id="password" required>
+
+            <button type="submit" id="authBtn">Entrar</button>
+        </form>
+
+        <div class="switch-auth">
+            <span id="switchText">Não tem uma conta?</span>
+            <a href="#" id="switchLink">Registre-se</a>
         </div>
+
+        
     </div>
+    <script src="../js/login.js"></script>
+</body>
 </html>

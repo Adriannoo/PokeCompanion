@@ -220,3 +220,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadPokemon(id);
 });
+
+
+const loginBtn = document.querySelector(".login-btn");
+
+const loggedUser = localStorage.getItem("loggedUser");
+
+if (loggedUser) {
+    if (loginBtn) {
+        const userData = JSON.parse(localStorage.getItem(loggedUser));
+        loginBtn.textContent = userData.username;
+    }
+}
