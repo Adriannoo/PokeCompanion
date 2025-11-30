@@ -32,6 +32,28 @@ document.addEventListener("DOMContentLoaded", () => {
     let pokemons = [];
     let sortMode = "az"; // az, za, id-asc, id-desc
 
+    // Mapeamento de cor secundária por tipo — usado para o gradiente do card
+    const TYPE_SECOND_COLOR = {
+        water: '#6cbde4',
+        ice: '#8cddd4',
+        rock: '#d7cd90',
+        steel: '#58a6aa',
+        normal: '#a3a49e',
+        poison: '#c261d4',
+        psychic: '#fe9f92',
+        fighting: '#e74347',
+        fire: '#fbae46',
+        flying: '#a6c2f2',
+        ghost: '#7773d4',
+        grass: '#5ac178',
+        electric: '#fbe273',
+        fairy: '#f3a7e7',
+        dark: '#6e7587',
+        dragon: '#0180c7',
+        bug: '#afc836',
+        ground: '#d29463'
+    };
+
     // Util: fallback de imagem
     const FALLBACK_IMG =
         "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png";
@@ -121,6 +143,15 @@ document.addEventListener("DOMContentLoaded", () => {
         // imagem — img element com fallback
         const imgWrap = document.createElement("div");
         imgWrap.className = "card-image";
+        // setamos uma variável CSS por card para controlar a cor do gradiente
+        // baseada no primeiro tipo do Pokémon (tipo principal)
+        try {
+            const primary = Array.isArray(p.types) && p.types.length ? p.types[0] : null;
+            const color = primary && TYPE_SECOND_COLOR[primary] ? TYPE_SECOND_COLOR[primary] : '#764ba2';
+            imgWrap.style.setProperty('--card-primary-color', color);
+        } catch (e) {
+            // defensive: não bloquear renderização se algo falhar
+        }
         const img = document.createElement("img");
         img.src = p.image || FALLBACK_IMG;
         img.alt = p.name || "Pokemon";
@@ -138,16 +169,28 @@ document.addEventListener("DOMContentLoaded", () => {
         num.className = "pokemon-number";
         num.textContent = `#${String(p.id).padStart(4, "0")}`;
 
-        // types badges
+        // types badges (show full icon SVGs from icones-tipos; fallback to text)
         const typesWrap = document.createElement("div");
         typesWrap.className = "pokemon-types";
         if (p.types && p.types.length) {
-            p.types.forEach((t) => {
-            const span = document.createElement("span");
-            span.className = `type-badge ${t}`;
-            span.textContent = capitalize(t);
-            typesWrap.appendChild(span);
-            });
+                p.types.forEach(t => {
+                    const typeName = t;
+                    const span = document.createElement('span');
+                    span.className = `type-badge icon-only ${typeName}`;
+
+                    const img = document.createElement('img');
+                    img.className = 'type-badge-img';
+                    img.alt = typeName + ' icon';
+                    img.src = `../assets/types/icones-tipos/${typeName}.svg`;
+                    img.onerror = () => {
+                        // fallback to text if icon not available
+                        img.remove();
+                        span.textContent = typeName;
+                    };
+
+                    span.appendChild(img);
+                    typesWrap.appendChild(span);
+                });
         }
 
         info.appendChild(h4);
@@ -170,6 +213,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         pokemonGrid.appendChild(frag);
+        // after DOM insertion, try to inline any SVGs used as icons so we can
+        // remove embedded white backgrounds and better control alignment
+        try { inlineTypeBadgeSvgs(); } catch (e) { /* fail silently */ }
     }
 
     function capitalize(s) {
@@ -195,6 +241,53 @@ document.addEventListener("DOMContentLoaded", () => {
         default:
             break;
         }
+    }
+
+    // Inline SVGs for type badges in cards: fetch SVG source, remove background rects
+    // and replace the <img> with the parsed <svg>. This lets us ensure transparency
+    // and consistent centering even when the exported SVGs contain white boxes.
+    function inlineTypeBadgeSvgs() {
+        const imgs = document.querySelectorAll('.type-badge.icon-only img[type-badge-img], .type-badge.icon-only img');
+        imgs.forEach(img => {
+            const src = img.getAttribute('src');
+            if (!src || !src.toLowerCase().endsWith('.svg')) return;
+            fetch(src).then(res => {
+                if (!res.ok) throw new Error('svg fetch failed');
+                return res.text();
+            }).then(svgText => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(svgText, 'image/svg+xml');
+                const svg = doc.querySelector('svg');
+                if (!svg) return;
+
+                // Remove any full-size rects that act as white backgrounds
+                const rects = svg.querySelectorAll('rect');
+                rects.forEach(r => {
+                    const fill = (r.getAttribute('fill') || '').trim().toLowerCase();
+                    const x = r.getAttribute('x') || '0';
+                    const y = r.getAttribute('y') || '0';
+                    // remove rects that look like full-backgrounds (white or positioned at 0,0)
+                    if (fill === '#fff' || fill === '#ffffff' || fill === 'white' || (x === '0' && y === '0')) {
+                        r.parentNode && r.parentNode.removeChild(r);
+                    }
+                });
+
+                // Strip width/height to allow CSS sizing, keep viewBox
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                svg.style.width = '92%';
+                svg.style.height = '92%';
+                svg.style.display = 'block';
+
+                // copy any important attributes to the svg in the document
+                svg.setAttribute('preserveAspectRatio', svg.getAttribute('preserveAspectRatio') || 'xMidYMid meet');
+
+                // replace the img node with the svg
+                img.replaceWith(svg);
+            }).catch(() => {
+                // leave the original img if fetching or parsing fails
+            });
+        });
     }
 
     // Handler: quando usuário clicar pesquisar
@@ -326,11 +419,40 @@ document.addEventListener("DOMContentLoaded", () => {
         const items = document.querySelectorAll('.type-item');
         if (!items || items.length === 0) return;
         items.forEach(it => {
+            // inject glyph SVG (drawing) into the type-icon container
+            const icon = it.querySelector('.type-icon');
+            if (icon) {
+                const typeClass = Array.from(icon.classList).find(c => c !== 'type-icon');
+                if (typeClass) {
+                    // fetch the glyph SVG and inline it so it can sit over the colored background
+                    const glyphUrl = `../assets/types/tipos-desenho/${typeClass}.svg`;
+                    fetch(glyphUrl).then(res => {
+                        if (!res.ok) throw new Error('glyph not found');
+                        return res.text();
+                    }).then(svgText => {
+                        // sanitize basic script tags out (defensive)
+                        const safe = svgText.replace(/<\/?script[\s\S]*?>/gi, '');
+                        icon.innerHTML = safe;
+                        // ensure svg element has no inline width/height that breaks sizing
+                        const svg = icon.querySelector('svg');
+                        if (svg) {
+                            svg.setAttribute('width', '');
+                            svg.setAttribute('height', '');
+                            svg.style.width = '60%';
+                            svg.style.height = '60%';
+                            svg.style.display = 'block';
+                        }
+                    }).catch(() => {
+                        // fallback: show nothing (keep colored circle)
+                        // leave icon content empty
+                    });
+                }
+            }
+
             it.addEventListener('click', () => {
-                const icon = it.querySelector('.type-icon');
-                if (!icon) return;
-                // pega a primeira classe além de 'type-icon'
-                const cls = Array.from(icon.classList).find(c => c !== 'type-icon');
+                const icon2 = it.querySelector('.type-icon');
+                if (!icon2) return;
+                const cls = Array.from(icon2.classList).find(c => c !== 'type-icon');
                 if (!cls) return;
                 if (currentTypeFilter === cls) {
                     currentTypeFilter = null; // toggle off

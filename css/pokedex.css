@@ -21,17 +21,19 @@ h1, h2, h3, h4, button, .nav-item span {
 
 /*  BACKGROUND STRIPES  */
 .background-container {
+    /* fixed to viewport so stripes remain static while scrolling */
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    height: 139vh;
+    height: 100vh;
     background-color: #000;
     overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: -1; /* keep behind header/content */
+    pointer-events: none; /* allow clicks through the background */
     filter: blur(5px);
 }
 
@@ -67,6 +69,9 @@ h1, h2, h3, h4, button, .nav-item span {
     background-color: var(--cinza-padrao);
     box-shadow: 0 calc(4 / 1080 * 100vh) calc(4 / 1080 * 100vh)
         rgba(0, 0, 0, 0.25);
+    position: sticky; /* keep header visible at top while scrolling */
+    top: 0;
+    z-index: 40; /* ensure header stays above content and sidebar */
 }
 
 .nav {
@@ -121,6 +126,7 @@ h1, h2, h3, h4, button, .nav-item span {
     transition: 0.3s ease;
     -webkit-text-stroke: 0.2em black;
     paint-order: stroke fill;
+    text-decoration: none;
 }
 .login-btn:hover {
     transform: scale(1.05);
@@ -129,19 +135,39 @@ h1, h2, h3, h4, button, .nav-item span {
 
 /* Sidebar */
 .sidebar {
-    position: fixed;
-    top: calc(120 / 1080 * 100vh); /* below header (padding + nav height approx) */
+    position: fixed; /* keep sidebar static with viewport */
+    top: calc(120 / 1080 * 100vh); /* below header */
     left: 0;
     width: 18vw;
     min-width: 200px;
     max-width: 280px;
-    bottom: 0;
+    bottom: 0; /* stretch to bottom */
     background-color: #141414;
     border-right: 2px solid #000;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    z-index: 10;
+    z-index: 15; /* below header (20) */
     overflow-y: auto;
     padding: 2vh 1vw;
+}
+
+/* Dark scrollbar for the left filter sidebar */
+.sidebar {
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: #222 #0a0a0a; /* thumb track for Firefox */
+}
+.sidebar::-webkit-scrollbar {
+    width: 12px;
+}
+.sidebar::-webkit-scrollbar-track {
+    background: #0a0a0a;
+}
+.sidebar::-webkit-scrollbar-thumb {
+    background: linear-gradient(#222, #111);
+    border-radius: 10px;
+    border: 2px solid #0a0a0a;
+}
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: #333;
 }
 
 .sidebar-header {
@@ -168,6 +194,11 @@ h1, h2, h3, h4, button, .nav-item span {
     padding: 2vh 1vw;
 }
 
+/* center grid cells so each type-item sits in the middle of its column */
+.types-grid {
+    justify-items: center;
+}
+
 .type-item {
     display: flex;
     flex-direction: column;
@@ -189,12 +220,40 @@ h1, h2, h3, h4, button, .nav-item span {
     max-width: 70px;
     max-height: 70px;
     border-radius: 50%;
-    box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.3);
+    box-shadow: none; /* remove white glow so glyph sits cleanly */
+    background: transparent; /* ensure no default background */
 }
 
-.type-item span {
-    font-size: clamp(12px, 1.2vw, 18px);
-    text-align: center;
+/* ensure the glyph SVG is perfectly centered inside the circular container */
+.type-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.type-icon img.sidebar-type-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+}
+
+/* style for inlined glyph SVGs inside the sidebar circle */
+.type-icon svg {
+    width: 60%;
+    height: 60%;
+    display: flex;
+    align-items: center;
+}
+.type-icon svg {
+    width: 60%;
+    height: 60%;
+    display: block;
+    margin: 0 auto;
+}
+.type-icon svg * {
+    fill: #ffffff; /* force glyph to white so it shows over the gradient */
 }
 
 /* Cores dos Tipos */
@@ -221,7 +280,7 @@ h1, h2, h3, h4, button, .nav-item span {
 .main-content {
     position: relative;
     margin-left: max(200px, 18vw);
-    margin-top: calc(120 / 1080 * 100vh); /* push below header */
+    margin-top: 0; /* header is sticky and in-flow, no extra top margin needed */
     padding: 3vh 3vw;
     min-height: calc(100vh - 10vh - 20vh);
     z-index: 10;
@@ -229,86 +288,85 @@ h1, h2, h3, h4, button, .nav-item span {
 
 /* ======= DROPDOWN DE ORDENAÇÃO ======= */
 .sort-select {
-  position: relative;
-  display: inline-block;
-  font-family: 'Righteous', sans-serif;
+    position: relative;
+    display: inline-block;
+    font-family: 'Righteous', sans-serif;
 }
 
 .sort-btn {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: black;
-  color: #fff;
-  border: 2px solid #fff;
-  border-radius: 12px;
-  padding: 10px 18px;
-  cursor: pointer;
-  font-size: 20px;
-  transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: black;
+    color: #fff;
+    border: 2px solid #fff;
+    border-radius: 12px;
+    padding: 10px 18px;
+    cursor: pointer;
+    font-size: 20px;
+    transition: all 0.3s ease;
 }
 
 .sort-btn:hover {
-  transform: scale(1.02);
+    transform: scale(1.02);
 }
 
 .pokeball-icon {
-  width: 28px;
-  height: 28px;
+    width: 28px;
+    height: 28px;
 }
 
 .arrow {
-  margin-left: 5px;
-  font-size: 18px;
-  transition: transform 0.2s ease;
+    margin-left: 5px;
+    font-size: 18px;
+    transition: transform 0.2s ease;
 }
 
 .sort-select.open .arrow {
-  transform: rotate(180deg);
+    transform: rotate(180deg);
 }
 
 .sort-options {
-  position: absolute;
-  top: 110%;
-  left: 0;
-  background: rgba(0, 0, 0, 0.95);
-  border: 2px solid white;
-  border-radius: 10px;
-  list-style: none;
-  padding: 10px 0;
-  margin: 0;
-  display: none;
-  z-index: 20;
-  width: 180px;
+    position: absolute;
+    top: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    border: 2px solid white;
+    border-radius: 10px;
+    list-style: none;
+    padding: 10px 0;
+    margin: 0;
+    display: none;
+    z-index: 20;
+    width: 180px;
 }
 
 .sort-select.open .sort-options {
-  display: block;
-  animation: dropdownFade 0.2s ease-in;
+    display: block;
+    animation: dropdownFade 0.2s ease-in;
 }
 
 .sort-options li {
-  padding: 8px 15px;
-  color: #fff;
-  cursor: pointer;
-  font-family: 'Fredoka', sans-serif;
-  font-size: 18px;
-  transition: background 0.2s ease;
+    padding: 8px 15px;
+    color: #fff;
+    cursor: pointer;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 18px;
+    transition: background 0.2s ease;
 }
 
 .sort-options li:hover {
-  background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.2);
 }
 
 @keyframes dropdownFade {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 
@@ -347,8 +405,10 @@ h1, h2, h3, h4, button, .nav-item span {
 }
 
 .search-btn {
-    background-color: #81c784;
+    background-color: var(--verde-campo);
     color: #fff;
+    -webkit-text-stroke: 0.2em black;
+    paint-order: stroke fill;
     border: 3px solid #000;
     border-radius: 20px;
     padding: 1.5vh 3vw;
@@ -363,7 +423,9 @@ h1, h2, h3, h4, button, .nav-item span {
 }
 
 .load-more-btn{
-    background-color: #81c784;
+    background-color: var(--verde-campo);
+    -webkit-text-stroke: 0.2em black;
+    paint-order: stroke fill;
     color: #fff;
     border: 3px solid #000;
     border-radius: 20px;
@@ -394,12 +456,24 @@ h1, h2, h3, h4, button, .nav-item span {
 }
 
 .board-header h3 {
-    color: #000;
+    color: white;
+    -webkit-text-stroke: 0.2em black;
+    paint-order: stroke fill;
     font-size: clamp(20px, 2vw, 36px);
 }
 
+.board-controls {
+    margin-left: auto; /* push the whole controls group to the right */
+    display: flex;
+    align-items: center;
+    gap: 1vw;
+}
+
+.board-controls h3 {
+    margin: 0;
+}
+
 .sort-select {
-    margin-left: auto;
     display: flex;
     align-items: center;
     gap: 1vw;
@@ -436,7 +510,7 @@ h1, h2, h3, h4, button, .nav-item span {
 .pokemon-card {
     image-rendering: pixelated;
     background-color: #fff;
-    border: 3px solid #fff;
+    /* border: 3px solid #fff; */
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 5px rgba(0, 0, 0, 0.25);
@@ -452,17 +526,18 @@ h1, h2, h3, h4, button, .nav-item span {
 .card-image {
     width: 100%;
     aspect-ratio: 1;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+     /* Centro com a cor primária do Pokémon, borda preta ao redor.
+         Ajuste o '35%' para reduzir/aumentar o diâmetro da cor central. */
+     background: radial-gradient(circle at 50% 40%, var(--card-primary-color) 0%, var(--card-primary-color) 35%, #000000 100%);
     display: flex;
     align-items: center;
     justify-content: center;
-    border-bottom: 3px solid #fff;
 }
 
 .card-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    width: 90%;
+    height: 90%;
+    object-fit: contain;
 }
 
 .card-info {
@@ -485,21 +560,66 @@ h1, h2, h3, h4, button, .nav-item span {
 
 .pokemon-types {
     display: flex;
-    gap: 1vw;
+    gap: 1vw; /* slightly larger gap so large circular badges don't keep touching */
     justify-content: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap; /* keep badges on a single row by default */
+    align-items: center; /* keep badges vertically centered */
 }
 
-.type-badge {
-    /* base visual tweaks — icon background and padding are provided by css/types-icons.css */
-    box-shadow: 0px 0px 18px rgba(255, 255, 255, 0.12);
+/* Icon-only badges used in cards (full icon SVG files) */
+
+.type-badge.icon-only {
+    /* Larger circular container you requested, but without border or shadow */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: clamp(84px, 9vw, 120px);
+    height: clamp(84px, 9vw, 120px);
+    border-radius: 50%;
+    overflow: hidden;
+    background: transparent;
+    
+}
+.type-badge.icon-only .type-badge-img {
+    /* make the icon fill most of the circle without overflow */
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+    display: block;
+    background: transparent;
+    border: none;
+}
+
+/* when we inline SVGs, they should match the image sizing */
+.type-badge.icon-only svg {
+    width: 80%;
+    height: 80%;
+    display: block;
+    background: transparent;
+}
+
+/* Glyph badges on the detail page (inline SVGs) */
+.pokemon-types .type-badge.glyph {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: clamp(44px, 5vw, 64px);
+    height: clamp(44px, 5vw, 64px);
+    border-radius: 50%;
+    background: transparent;
+}
+.pokemon-types .type-badge.glyph svg {
+    width: 60%;
+    height: 60%;
+    display: block;
+    fill: currentColor;
 }
 
 /* ===== FOOTER ===== */
 .footer {
     display: flex;
     position: relative;
-    z-index: 0;
+    z-index: 25; /* make footer sit above the sidebar when scrolled to bottom */
     width: 100%;
     min-height: calc(300 / 1080 * 100vh);
     background: rgba(0, 0, 0, 0.9);

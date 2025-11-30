@@ -1,4 +1,0 @@
-/* Inicial — execute tools/generate-type-css.js para gerar regras completas */
-.type-icon{background-size:contain;background-repeat:no-repeat;background-position:center;display:inline-block}
-.type-badge{position:relative;display:inline-flex;align-items:center;gap:0.5rem;padding-left:54px;padding-right:12px;border-radius:999px;font-weight:700;color:#fff;height:auto}
-.type-badge::before{content:'';position:absolute;left:12px;width:30px;height:30px;background-size:contain;background-repeat:no-repeat;background-position:center;border-radius:50%}
