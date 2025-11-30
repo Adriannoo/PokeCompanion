@@ -9,27 +9,38 @@
     <link rel="icon" type="imagem/jpg" href="../assets/icone1.png">
 </head>
 <body>
+
     <!-- Header -->
-        <header class="header">
-            <nav class="nav">
-                <a class="nav-item" href="pagina-inicial.html">
-                    <div class="nav-icon icon-1"></div>
-                    <span>Página Inicial</span>
-                </a>
-                <a class="nav-item">
-                    <div class="nav icon-2" href=""></div> 
-                    <span>Pokédex</span>
-                </a>
-                <a class="nav-item" href="comparador.html">
-                    <div class="nav icon-3"></div>
-                    <span>Comparar</span>
-                </a>
-                <a class="login-btn" href="login.html">
-                    <div class="nav icon-4"></div>
-                    <span>Fazer login</span>
+    <header class="header">
+        <nav class="nav">
+            <a class="nav-item" href="pagina-inicial.html">
+                <div class="nav-icon icon-1"></div>
+                <span>Página Inicial</span>
             </a>
-            </nav>
-        </header>
+
+            <a class="nav-item">
+                <div class="nav icon-2"></div>
+                <span>Pokédex</span>
+            </a>
+
+            <a class="nav-item" href="comparador.html">
+                <div class="nav icon-3"></div>
+                <span>Comparar</span>
+            </a>
+
+            <!-- 🔥 Ajustado: botão agora segue o padrão correto -->
+            <a class="login-btn" href="login.html">
+                <span>Fazer login</span>
+            </a>
+
+            <!-- 🔥 Adicionado: menu de usuário (necessário p/ logout) -->
+            <div class="user-menu" id="userMenu" style="display:none;">
+                <button id="logoutBtn">Sair</button>
+            </div>
+
+        </nav>
+    </header>
+
 
     <!-- Container Principal -->
     <div class="container">
@@ -40,8 +51,6 @@
             <div class="stripe stripe-blue"></div>
             <div class="stripe stripe-red"></div>
         </div>
-
-        
 
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -142,6 +151,7 @@
                 <div class="board-header">
                     <h3>Filtrar</h3>
                     <h3>Organizar por</h3>
+
                     <div class="sort-select">
                         <button class="sort-btn">
                             <img src="../assets/pokeball-icon.svg" alt="Pokeball" class="pokeball-icon">
@@ -161,8 +171,6 @@
                 <!-- Grid de Cards -->
                 <div class="pokemon-grid">
 
-                    <!-- Cards -->
-
                     <div class="pokemon-card">
                         <div class="card-image">
                             <img src="https://via.placeholder.com/270x270" alt="Pokemon">
@@ -175,13 +183,17 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
+
                 <div style="text-align:center; margin-top:2vh;">
                     <button class="load-more-btn">Carregar mais</button>
                 </div>
+
             </div>
         </main>
 
+        <!-- Footer -->
         <footer class="footer">
             <div class="footer-left">
                 <div class="footer-brand">PokéCompanion</div>
@@ -209,6 +221,7 @@
                 </p>
             </div>
         </footer>
+
     </div>
 
     <script src="../js/pokedex.js"></script>

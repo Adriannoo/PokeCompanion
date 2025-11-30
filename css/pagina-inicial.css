@@ -54,22 +54,34 @@ body {
 
 /* ===== BOTÃO LOGIN ===== */
 .login-btn {
-    padding: clamp(16px, calc(20 / 1080 * 100vh), 28px) clamp(16px, calc(28 / 1920 * 100vw), 32px);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: clamp(16px, calc(20 / 1080 * 100vh), 28px)
+             clamp(16px, calc(28 / 1920 * 100vw), 32px);
+
     font-family: "Righteous", sans-serif;
     font-size: clamp(16px, 1.5vw, 32px);
     color: var(--branco-full);
+
     background-color: var(--verde-campo);
     border: calc(3 / 1920 * 100vw) solid black;
     border-radius: calc(24 / 1920 * 100vw);
+
     box-shadow: 0 calc(4 / 1080 * 100vh) calc(4 / 1080 * 100vh) rgba(0,0,0,0.25);
+
     cursor: pointer;
     transition: 0.3s ease;
+
     -webkit-text-stroke: 0.2em black;
     paint-order: stroke fill;
 }
+
 .login-btn:hover {
     transform: scale(1.05);
 }
+
 /* === === === */
 
 /* ===== BACKGROUND ===== */
@@ -114,12 +126,11 @@ body {
 
 /* Main Content */
 .main-content {
-    /* position: relative; */
     z-index: 1;
     width: 100%;
     min-height: calc(1800 / 1920 * 100vh);
     bottom: calc(200 / 1920 * 100vh);
-    margin-bottom: calc(100 / 1080 * 100vh); /* adiciona espaço pro footer */
+    margin-bottom: calc(100 / 1080 * 100vh);
 }
 /* === === === */
 
@@ -159,16 +170,21 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+
     position: absolute;
     padding: calc(30 / 1080 * 100vh);
+
     left: 0;
     top: calc(220 / 1080 * 100vh);
+
     width: clamp(300px, calc(820 / 1920 * 100vw), 820px);
     height: clamp(300px, calc(620 / 1080 * 100vh), 620px);
+
     background: rgba(217, 217, 217, 0.95);
     border-radius: 0 calc(60 / 1920 * 100vw) calc(60 / 1920 * 100vw) 0;
     border: calc(5 / 1920 * 100vw) solid black;
     border-left: 0;
+
     box-shadow: 5px 10px 4px rgba(0,0,0,0.25);
     overflow: hidden;
 }
@@ -176,12 +192,15 @@ body {
 .frame-sobre-text {
     display: flex;
     justify-content: center;
+
     font-family: Fredoka;
     color: var(--branco-full);
     text-align: center;
+
     text-shadow: 0 0 20px rgba(0, 0, 0, 0.30);
     paint-order: stroke fill;
     -webkit-text-stroke: 0.3vw black;
+
     font-size: clamp(26px, 4vw, 52px);
     font-weight: 500;
     line-height: 1.2;
@@ -206,14 +225,6 @@ body {
     gap: clamp(10px, 2vh, 20px);
 }
 
-.footer-logo {
-    width: clamp(40px, calc(80 / 1920 * 100vw), 80px);
-    height: clamp(40px, calc(80 / 1080 * 100vh), 80px);
-    border-radius: 50%;
-    opacity: 0.7;
-    box-shadow: 0 4px 4px rgba(0,0,0,0.25);
-}
-
 .footer-brand {
     font-family: 'Righteous', sans-serif;
     font-size: clamp(20px, 2.5vw, 54px);
@@ -228,7 +239,6 @@ body {
     color: white;
     opacity: 0.7;
     text-decoration: underline;
-    margin: calc(10 / 1920 * 100vw);
 }
 
 .footer-links ul {
@@ -253,7 +263,6 @@ body {
     font-size: clamp(24px, 2.5vw, 54px);
     color: white;
     opacity: 0.7;
-    margin: 0px;
 }
 
 .footer-description,
@@ -266,7 +275,6 @@ body {
     line-height: 1.4;
     max-width: 500px;
 }
-/* === === === */
 
 /* ===== RESPONSIVIDADE ===== */
 @media (max-width: 1440px) {
@@ -276,6 +284,7 @@ body {
 
 @media (max-width: 1024px) {
     .nav { flex-wrap: wrap; gap: 1rem; }
+
     .frame-sobre {
         position: relative;
         margin: 4rem auto;
@@ -284,6 +293,7 @@ body {
         width: 90%;
         border-radius: 20px;
     }
+
     .blastoise-wrap {
         position: relative;
         margin: 0 auto;
@@ -300,4 +310,52 @@ body {
     .blastoise-wrap { width: 90%; }
     .footer { flex-direction: column; align-items: center; }
     .footer-divider { display: none; }
+}
+
+/* ===== MENU DO USUÁRIO ===== */
+.user-menu {
+    position: absolute;
+
+    background: var(--cinza-padrao);
+    border: calc(3 / 1920 * 100vw) solid black;
+    border-radius: calc(16 / 1920 * 100vw);
+
+    padding: 6px 0;
+    width: clamp(110px, 9vw, 150px);
+
+    box-shadow: 0 calc(4 / 1080 * 100vh) calc(4 / 1080 * 100vh) rgba(0,0,0,0.25);
+
+    display: none;
+    z-index: 9999;
+}
+
+/* BOTÃO SAIR — estilo Pokémon */
+.user-menu button {
+    width: 100%;
+
+    background: var(--vermelho-boston);
+    color: var(--branco-full);
+
+    font-family: "Righteous", sans-serif;
+    font-size: clamp(14px, 1vw, 22px);
+    font-weight: 400;
+
+    border: calc(3 / 1920 * 100vw) solid black;
+    border-radius: calc(24 / 1920 * 100vw);
+
+    padding: 10px 6px;
+
+    cursor: pointer;
+
+    -webkit-text-stroke: 0.18em black;
+    paint-order: stroke fill;
+
+    box-shadow: 0 calc(4 / 1080 * 100vh) calc(4 / 1080 * 100vh) rgba(0,0,0,0.25);
+
+    transition: .25s ease;
+}
+
+.user-menu button:hover {
+    transform: scale(1.05);
+    background: #b10d0d;
 }

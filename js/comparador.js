@@ -1,3 +1,6 @@
+// =============================
+// LÓGICA DO COMPARADOR
+// =============================
 const apiURL = "https://pokeapi.co/api/v2/pokemon/";
 let pokemonsSelecionados = [];
 
@@ -68,4 +71,53 @@ function removerPokemon(index) {
   pokemonsSelecionados.splice(index, 1);
   localStorage.setItem("pokemonsComparados", JSON.stringify(pokemonsSelecionados));
   atualizarCards();
+}
+
+
+// =============================
+// SISTEMA DE LOGIN (PADRÃO)
+// =============================
+
+const loginBtn = document.querySelector(".login-btn");
+const userMenu = document.getElementById("userMenu");
+const logoutBtn = document.getElementById("logoutBtn");
+
+const loggedUser = localStorage.getItem("loggedUser");
+
+if (loggedUser && loginBtn) {
+    const userData = JSON.parse(localStorage.getItem(loggedUser));
+    loginBtn.textContent = userData.username;
+
+    // Evita navegar para login
+    loginBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        positionUserMenu();
+        userMenu.style.display =
+            userMenu.style.display === "block" ? "none" : "block";
+    });
+}
+
+// Logout
+logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("loggedUser");
+    userMenu.style.display = "none";
+    window.location.href = "login.html";
+});
+
+// Fechar menu ao clicar fora
+document.addEventListener("click", (e) => {
+    if (!loginBtn.contains(e.target) && !userMenu.contains(e.target)) {
+        userMenu.style.display = "none";
+    }
+});
+
+// Posicionamento do menu — exatamente abaixo do botão
+function positionUserMenu() {
+    const rect = loginBtn.getBoundingClientRect();
+
+    const top = rect.top + rect.height + window.scrollY + 4;
+    const left = rect.left + window.scrollX;
+
+    userMenu.style.top = top + "px";
+    userMenu.style.left = left + "px";
 }

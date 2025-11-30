@@ -31,7 +31,7 @@ h1, h2, h3, h4, button, .nav-item span {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: -1; /* keep behind header/content */
+    z-index: -1; 
     filter: blur(5px);
 }
 
@@ -58,9 +58,8 @@ h1, h2, h3, h4, button, .nav-item span {
     height: calc(400 / 1080 * 100vh);
     background: var(--vermelho-boston);
 }
-/* === === === === === === === === === === === === === === === === === === === === */
 
-/* ===== HEADER ===== */
+/* HEADER */
 .header {
     margin: auto;
     padding: calc(40 / 1080 * 100vh) calc(48 / 1920 * 100vw);
@@ -85,7 +84,7 @@ h1, h2, h3, h4, button, .nav-item span {
     gap: 8px;
 }
 
-/*  ÍCONES  */
+/* ÍCONES */
 .icon-1, .icon-2, .icon-3 {
     width: clamp(40px, calc(80 / 1920 * 100vw), 80px);
     height: clamp(40px, calc(80 / 1080 * 100vh), 80px);
@@ -94,7 +93,7 @@ h1, h2, h3, h4, button, .nav-item span {
     background-position: center;
 }
 
-/* FONTE HEADER */
+/* Letra Header */
 .nav-item span {
     font-family: "Righteous", sans-serif;
     color: white;
@@ -105,7 +104,7 @@ h1, h2, h3, h4, button, .nav-item span {
     paint-order: stroke fill;
 }
 
-/*  BOTÃO LOGIN  */
+/* Botão Login */
 .login-btn {
     padding: clamp(16px, calc(20 / 1080 * 100vh), 28px)
         clamp(16px, calc(28 / 1920 * 100vw), 32px);
@@ -125,12 +124,11 @@ h1, h2, h3, h4, button, .nav-item span {
 .login-btn:hover {
     transform: scale(1.05);
 }
-/* === === === === === === === === === === === === === === === === === === === === */
 
-/* Sidebar */
+/* SIDEBAR */
 .sidebar {
     position: fixed;
-    top: calc(120 / 1080 * 100vh); /* below header (padding + nav height approx) */
+    top: calc(120 / 1080 * 100vh);
     left: 0;
     width: 18vw;
     min-width: 200px;
@@ -194,10 +192,9 @@ h1, h2, h3, h4, button, .nav-item span {
 
 .type-item span {
     font-size: clamp(12px, 1.2vw, 18px);
-    text-align: center;
 }
 
-/* Cores dos Tipos */
+/* CORES DOS TIPOS */
 .water { background: linear-gradient(to bottom, #4a90dd, #6cbde4); }
 .ice { background: linear-gradient(to bottom, #70ccbd, #8cddd4); }
 .rock { background: linear-gradient(to bottom, #c5b489, #d7cd90); }
@@ -217,100 +214,15 @@ h1, h2, h3, h4, button, .nav-item span {
 .bug { background: linear-gradient(to bottom, #92bc2c, #afc836); }
 .ground { background: linear-gradient(to bottom, #dc7545, #d29463); }
 
-/* Conteúdo Principal */
+/* Main Content */
 .main-content {
     position: relative;
     margin-left: max(200px, 18vw);
-    margin-top: calc(120 / 1080 * 100vh); /* push below header */
+    margin-top: calc(120 / 1080 * 100vh);
     padding: 3vh 3vw;
     min-height: calc(100vh - 10vh - 20vh);
     z-index: 10;
 }
-
-/* ======= DROPDOWN DE ORDENAÇÃO ======= */
-.sort-select {
-  position: relative;
-  display: inline-block;
-  font-family: 'Righteous', sans-serif;
-}
-
-.sort-btn {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: black;
-  color: #fff;
-  border: 2px solid #fff;
-  border-radius: 12px;
-  padding: 10px 18px;
-  cursor: pointer;
-  font-size: 20px;
-  transition: all 0.3s ease;
-}
-
-.sort-btn:hover {
-  transform: scale(1.02);
-}
-
-.pokeball-icon {
-  width: 28px;
-  height: 28px;
-}
-
-.arrow {
-  margin-left: 5px;
-  font-size: 18px;
-  transition: transform 0.2s ease;
-}
-
-.sort-select.open .arrow {
-  transform: rotate(180deg);
-}
-
-.sort-options {
-  position: absolute;
-  top: 110%;
-  left: 0;
-  background: rgba(0, 0, 0, 0.95);
-  border: 2px solid white;
-  border-radius: 10px;
-  list-style: none;
-  padding: 10px 0;
-  margin: 0;
-  display: none;
-  z-index: 20;
-  width: 180px;
-}
-
-.sort-select.open .sort-options {
-  display: block;
-  animation: dropdownFade 0.2s ease-in;
-}
-
-.sort-options li {
-  padding: 8px 15px;
-  color: #fff;
-  cursor: pointer;
-  font-family: 'Fredoka', sans-serif;
-  font-size: 18px;
-  transition: background 0.2s ease;
-}
-
-.sort-options li:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-@keyframes dropdownFade {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 
 /* Barra de Pesquisa */
 .search-container {
@@ -355,7 +267,6 @@ h1, h2, h3, h4, button, .nav-item span {
     font-size: clamp(18px, 1.8vw, 28px);
     cursor: pointer;
     transition: background-color 0.3s;
-    white-space: nowrap;
 }
 
 .search-btn:hover {
@@ -372,9 +283,11 @@ h1, h2, h3, h4, button, .nav-item span {
     cursor: pointer;
     transition: background-color 0.3s;
 }
-.load-more-btn:hover{background-color:#66bb6a}
+.load-more-btn:hover{
+    background-color:#66bb6a;
+}
 
-/* Quadro de Pokémons */
+/* Quadro */
 .pokemon-board {
     background-color: rgba(217, 217, 217, 0.95);
     border: 3px solid #000;
@@ -425,7 +338,7 @@ h1, h2, h3, h4, button, .nav-item span {
     font-size: clamp(12px, 1.2vw, 20px);
 }
 
-/* Grid de Cards */
+/* Grid */
 .pokemon-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -491,11 +404,10 @@ h1, h2, h3, h4, button, .nav-item span {
 }
 
 .type-badge {
-    /* base visual tweaks — icon background and padding are provided by css/types-icons.css */
     box-shadow: 0px 0px 18px rgba(255, 255, 255, 0.12);
 }
 
-/* ===== FOOTER ===== */
+/* FOOTER */
 .footer {
     display: flex;
     position: relative;
@@ -520,7 +432,7 @@ h1, h2, h3, h4, button, .nav-item span {
     height: clamp(40px, calc(80 / 1080 * 100vh), 80px);
     border-radius: 50%;
     opacity: 0.7;
-    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 4px 4px rgba(0,0,0,0.25);
 }
 
 .footer-brand {
@@ -575,9 +487,8 @@ h1, h2, h3, h4, button, .nav-item span {
     line-height: 1.4;
     max-width: 500px;
 }
-/* === === === === === === === === === === === === === === === === === === === === */
 
-/* Responsividade */
+/* RESPONSIVIDADE */
 @media (max-width: 768px) {
     .sidebar {
         width: 25vw;
@@ -594,15 +505,6 @@ h1, h2, h3, h4, button, .nav-item span {
     
     .pokemon-grid {
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    }
-    
-    .footer-content {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .footer-section.about {
-        max-width: 80vw;
     }
 }
 
@@ -628,4 +530,51 @@ h1, h2, h3, h4, button, .nav-item span {
     .pokemon-grid {
         grid-template-columns: 1fr;
     }
+}
+
+/* =====================================================================
+   ADIÇÃO — MENU FLUTUANTE DO USUÁRIO
+   ===================================================================== */
+
+.user-menu {
+    position: absolute;
+    background: var(--cinza-padrao);
+    border: calc(3 / 1920 * 100vw) solid black;
+    border-radius: calc(16 / 1920 * 100vw);
+
+    padding: 6px 0;
+    width: clamp(110px, 9vw, 150px);
+
+    box-shadow: 0 calc(4 / 1080 * 100vh) calc(4 / 1080 * 100vh) rgba(0,0,0,0.25);
+    z-index: 99999;
+    display: none;
+}
+
+/* Botão “Sair” */
+.user-menu button {
+    width: 100%;
+    background: var(--vermelho-boston);
+    color: var(--branco-full);
+
+    font-family: "Righteous", sans-serif;
+    font-size: clamp(14px, 1vw, 22px);
+    font-weight: 400;
+
+    border: calc(3 / 1920 * 100vw) solid black;
+    border-radius: calc(24 / 1920 * 100vw);
+
+    padding: 10px 6px;
+    cursor: pointer;
+
+    -webkit-text-stroke: 0.18em black;
+    paint-order: stroke fill;
+
+    box-shadow: 0 calc(4 / 1080 * 100vh) calc(4 / 1080 * 100vh) rgba(0,0,0,0.25);
+
+    transition: 0.2s ease;
+}
+
+.user-menu button:hover {
+    transform: scale(1.05);
+    background: #b10d0d;
 }

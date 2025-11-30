@@ -69,6 +69,7 @@ body {
 .login-btn:hover {
     transform: scale(1.05);
 }
+
 /* === === === */
 
 
@@ -83,7 +84,6 @@ body {
     justify-content: center;
     align-items: center;
     z-index: 0;
-    overflow: hidden;
     filter: blur(5px);
 }
 
@@ -111,7 +111,6 @@ body {
     background: var(--vermelho-boston);
     bottom: calc(110 / 1920 * 100vw);
 }
-/* === === === */
 
 /* Page Title */
 .page-title {
@@ -126,8 +125,6 @@ body {
     margin: 30px 0;
     white-space: nowrap;
 }
-/* === === === */
-
 
 /* Main Content */
 .main-content {
@@ -141,7 +138,6 @@ body {
     padding: 30px;
     min-height: 1200px;
 }
-/* === === === */
 
 /* Search Bar */
 .search-bar {
@@ -160,136 +156,29 @@ body {
     opacity: 0.95;
 }
 
-.search-icon {
-    width: 35px;
-    height: 35px;
-    fill: white;
-}
-
-.search-text {
-    font-family: 'Righteous', sans-serif;
-    font-size: 36px;
-    color: white;
-    opacity: 0.9;
+.search-input {
     flex: 1;
-    text-align: center;
+    font-size: 20px;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    outline: none;
 }
 
-.search-arrow {
-    width: 12px;
-    height: 20px;
-    fill: white;
-    transform: rotate(90deg);
-}
-/* === === === */
-
-/* Dividers */
-.divider-horizontal {
-    width: 1350px;
-    height: 1px;
-    background: white;
-    margin: 30px auto;
-}
-
-.divider-vertical {
-    position: absolute;
-    width: 1px;
-    height: 85%;
-    background: white;
-    left: 50%;
-    top: 120px;
-    border-left: 2px dashed white;
-}
-
-.divider-dashed {
-    width: 650px;
-    height: 1px;
-    background: transparent;
-    border-top: 1px dashed white;
-    margin: 20px auto;
-}
-/* === === === */
-
-/* Footer */
-.footer {
-    display: flex;
-    position: relative;
-    z-index: 0;
-    width: 100%;
-    min-height: calc(300 / 1080 * 100vh);
-    background: rgba(0, 0, 0, 0.9);
-    flex-wrap: wrap;
-    padding: calc(40 / 1080 * 100vh) calc(80 / 1920 * 100vw);
-    margin-top: 0;
-}
-
-.footer-left, .footer-right {
-    display: flex;
-    flex-direction: column;
-    gap: clamp(10px, 2vh, 20px);
-}
-
-.footer-logo {
-    width: clamp(40px, calc(80 / 1920 * 100vw), 80px);
-    height: clamp(40px, calc(80 / 1080 * 100vh), 80px);
-    border-radius: 50%;
-    opacity: 0.7;
-    box-shadow: 0 4px 4px rgba(0,0,0,0.25);
-}
-
-.footer-brand {
+.add-btn {
+    background-color: var(--verde-campo);
+    color: white;
     font-family: 'Righteous', sans-serif;
-    font-size: clamp(20px, 2.5vw, 54px);
-    color: white;
-    opacity: 0.7;
+    border: 2px solid black;
+    border-radius: 12px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 20px;
 }
 
-.footer-links h4 {
-    font-family: 'Fredoka', sans-serif;
-    font-weight: 600;
-    font-size: clamp(14px, 1.5vw, 24px);
-    color: white;
-    opacity: 0.7;
-    text-decoration: underline;
-    margin: calc(10 / 1920 * 100vw);
+.add-btn:hover {
+    transform: scale(1.05);
 }
-
-.footer-links ul {
-    list-style: disc;
-    padding-left: 1.5rem;
-    font-family: 'Fredoka', sans-serif;
-    font-weight: 400;
-    font-size: clamp(14px, 1.5vw, 24px);
-    color: white;
-    opacity: 0.7;
-}
-
-.footer-divider {
-    width: 1px;
-    height: calc(320 / 1080 * 100vh);
-    background: rgba(255, 255, 255, 0.7);
-    margin: 0 calc(60 / 1920 * 100vw);
-}
-
-.footer-right h3 {
-    font-family: 'Righteous', sans-serif;
-    font-size: clamp(24px, 2.5vw, 54px);
-    color: white;
-    opacity: 0.7;
-    margin: 0px;
-}
-
-.footer-description,
-.footer-copyright {
-    display: flex;
-    font-family: 'Fredoka', sans-serif;
-    font-weight: 400;
-    font-size: clamp(14px, 1vw, 20px);
-    color: rgba(255, 255, 255, 0.7);
-    line-height: 1.4;
-    max-width: 500px;
-}
-/* === === === */
 
 /* Compare Container */
 .compare-container {
@@ -334,38 +223,6 @@ body {
     font-weight: bold;
 }
 
-.search-input {
-    flex: 1;
-    font-size: 20px;
-    padding: 10px;
-    border: none;
-    border-radius: 10px;
-    outline: none;
-}
-
-.add-btn {
-    background-color: var(--verde-campo);
-    color: white;
-    font-family: 'Righteous', sans-serif;
-    border: 2px solid black;
-    border-radius: 12px;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-size: 20px;
-}
-
-.add-btn:hover {
-    transform: scale(1.05);
-}
-
-/* Pokémon Info */
-.pokemon-img {
-    width: 180px;
-    height: 180px;
-    object-fit: contain;
-    margin-bottom: 10px;
-}
-
 .stat {
     display: flex;
     justify-content: space-between;
@@ -375,43 +232,48 @@ body {
     padding: 5px 10px;
 }
 
+/* Footer */
+.footer {
+    display: flex;
+    position: relative;
+    width: 100%;
+    min-height: calc(300 / 1080 * 100vh);
+    background: rgba(0, 0, 0, 0.9);
+    flex-wrap: wrap;
+    padding: calc(40 / 1080 * 100vh) calc(80 / 1920 * 100vw);
+}
 
+/* === USER MENU  === */
+.user-menu {
+    position: absolute;
+    background: var(--cinza-padrao);
+    border: calc(3 / 1920 * 100vw) solid black;
+    border-radius: calc(16 / 1920 * 100vw);
+    padding: 6px 0;
+    width: clamp(110px, 9vw, 150px);
+    box-shadow: 0 calc(4 / 1080 * 100vh) calc(4 / 1080 * 100vh) rgba(0,0,0,0.25);
+    z-index: 9999;
+    display: none;
+}
 
-/* Responsive para 1366x768 */
-@media screen and (max-width: 1366px) {
-    .container {
-        width: 1366px;
-    }
-    
-    .page-title {
-        font-size: 72px;
-    }
-    
-    .main-content {
-        width: 1200px;
-        min-height: 900px;
-    }
-    
-    .pokemon-frames {
-        gap: 20px;
-    }
-    
-    .pokemon-frame {
-        width: 580px;
-        min-height: 850px;
-    }
-    
-    .stats-section,
-    .abilities-section,
-    .weaknesses-section {
-        width: 350px;
-    }
-    
-    .weakness-container {
-        width: 310px;
-    }
-    
-    .bar-container {
-        height: 150px;
-    }
+.user-menu button {
+    width: 100%;
+    background: var(--vermelho-boston);
+    color: var(--branco-full);
+    font-family: "Righteous", sans-serif;
+    font-size: clamp(14px, 1vw, 22px);
+    font-weight: 400;
+    border: calc(3 / 1920 * 100vw) solid black;
+    border-radius: calc(24 / 1920 * 100vw);
+    padding: 10px 6px;
+    cursor: pointer;
+    -webkit-text-stroke: 0.18em black;
+    paint-order: stroke fill;
+    box-shadow: 0 calc(4 / 1080 * 100vh) calc(4 / 1080 * 100vh) rgba(0,0,0,0.25);
+    transition: 0.2s ease;
+}
+
+.user-menu button:hover {
+    transform: scale(1.05);
+    background: #b10d0d;
 }
