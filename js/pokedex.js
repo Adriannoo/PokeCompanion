@@ -131,12 +131,6 @@ document.addEventListener("DOMContentLoaded", () => {
         };
         imgWrap.appendChild(img);
 
-            const img = document.createElement("img");
-            img.src = p.image || FALLBACK_IMG;
-            img.alt = p.name || "Pokemon";
-            img.onerror = () => (img.src = FALLBACK_IMG);
-            imgWrap.appendChild(img);
-
             const info = document.createElement("div");
             info.className = "card-info";
 
@@ -147,12 +141,9 @@ document.addEventListener("DOMContentLoaded", () => {
             num.className = "pokemon-number";
             num.textContent = `#${String(p.id).padStart(4, "0")}`;
 
+            // types badges (show full icon SVGs from icones-tipos; fallback to text)
             const typesWrap = document.createElement("div");
             typesWrap.className = "pokemon-types";
-
-        // types badges (show full icon SVGs from icones-tipos; fallback to text)
-        const typesWrap = document.createElement("div");
-        typesWrap.className = "pokemon-types";
         if (p.types && p.types.length) {
                 p.types.forEach(t => {
                     const typeName = t;
@@ -213,7 +204,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // and replace the <img> with the parsed <svg>. This lets us ensure transparency
     // and consistent centering even when the exported SVGs contain white boxes.
     function inlineTypeBadgeSvgs() {
-        const imgs = document.querySelectorAll('.type-badge.icon-only img[type-badge-img], .type-badge.icon-only img');
+        const imgs = document.querySelectorAll('.type-badge.icon-only img');
         imgs.forEach(img => {
             const src = img.getAttribute('src');
             if (!src || !src.toLowerCase().endsWith('.svg')) return;
@@ -497,6 +488,7 @@ if (logoutBtn) {
 }
 
 document.addEventListener("click", (e) => {
+    if (!loginBtn || !userMenu) return;
     if (!loginBtn.contains(e.target) && !userMenu.contains(e.target)) {
         userMenu.style.display = "none";
     }
