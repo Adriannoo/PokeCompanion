@@ -203,6 +203,91 @@ body {
     position: relative;
     box-shadow: 0 4px 10px rgba(0,0,0,0.4);
 }
+/* inner card layout for structured content */
+.card-inner { display:flex; flex-direction:column; gap:12px; align-items:center }
+.card-header { display:flex; flex-direction:column; align-items:center; gap:8px }
+.pokemon-img { 
+    width:calc(200 / 1080 * 100vh);
+    image-rendering: pixelated 
+}
+.pokemon-title { font-size: 14px; margin: 6px 0; color: var(--muted-white) }
+.pokemon-name { display:block; font-family:'Righteous',sans-serif; font-size:20px; color:#fff; margin-top:6px }
+.pokemon-meta { font-size:13px; color: rgba(255,255,255,0.8) }
+.pokemon-types { display:flex; gap:8px; margin-top:6px }
+.type-pill {
+    display: flex;
+    background: rgba(255, 255, 255, 0.08);
+    /* color: #fff; */
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 13px;
+    align-content: center;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: inherit;
+}
+
+/* dotted vertical divider */
+.divider-vertical { width: 2px; background: transparent; border-left: 2px dotted rgba(255,255,255,0.12); margin: 6px 10px }
+
+/* mini panels inside card (stats, abilities, weaknesses) */
+.mini-panel { width: 100%; background: rgba(255,255,255,0.04); border-radius:10px; padding:12px; box-shadow: inset 0 -2px 0 rgba(0,0,0,0.25) }
+.mini-panel h3, .mini-panel h4 { margin:0 0 8px 0; font-size:14px; color:var(--muted-white) }
+
+/* stats graph */
+.stat-graph { display:flex; align-items:flex-end; justify-content:space-between; gap:10px; padding:8px 4px }
+.stat-bar { 
+    display:flex;
+    align-items:center;
+    gap:6px 
+}
+.bar-fill { width:100%; background: linear-gradient(180deg,#7b39d6,#5b28b3); border-radius:6px 6px 0 0; transition: height 700ms cubic-bezier(.2,.9,.2,1); height:0% }
+.bar-label { font-size:12px; color: rgba(255,255,255,0.95) }
+.bar-key { font-size:11px; color: rgba(255,255,255,0.6); margin-top:6px }
+.stat-total { margin-top:8px; text-align:right; font-weight:700; color: #fff }
+
+.abilities-panel ul { list-style:none; padding:0; margin:0; display:flex; gap:8px; flex-direction:column }
+.ability-item { background: rgba(255,255,255,0.02); padding:8px 10px; border-radius:8px; color:#fff }
+
+.weak-list { 
+    display:flex; 
+    gap:8px; 
+    flex-wrap:wrap;
+    justify-content: center;
+}
+
+.type-pill.weak { 
+    background: rgba(0,0,0,0.25); 
+    padding:8px 10px; 
+    border-radius:8px;
+    color: white; 
+}
+
+/* Stats list (horizontal bars) - mirror sobre-pokemon styling */
+.stats-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px }
+.stat-row { display:flex; align-items:center; gap:12px }
+.stat-label { width: 84px; font-size: 13px; color: rgba(255,255,255,0.95); text-transform: none }
+.stat-bar-wrap { flex: 1 1 auto }
+.stat-bar { position: relative; height: 12px; background: rgba(255,255,255,0.06); border-radius: 8px; overflow: hidden }
+.stat-bar::before { content: ""; position: absolute; inset: 0; background-image: repeating-linear-gradient(to right, rgba(255,255,255,0.035) 0 1px, transparent 1px 20px); pointer-events: none }
+
+.stat-fill { 
+    display:block; 
+    height:100%;
+    width:0%; transition: width 800ms cubic-bezier(.2,.9,.2,1);
+    background: linear-gradient(90deg, rgba(59, 59, 59, 0.5), rgba(255, 255, 255, 0.5));
+    border-radius: 8px 0 0 8px; box-shadow: inset 0 -1px 0 rgba(0,0,0,0.15) 
+}
+
+.stat-value { width:44px; text-align:right; font-weight:600; color: rgba(255,255,255,0.9) }
+
+/* small circular badge for weakness icon */
+.type-badge.glyph { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; background: rgba(255,255,255,0.06); margin-right:8px }
+.type-badge.glyph svg { width:18px; height:18px }
+.type-pill.weak .type-name { font-size:13px }
 
 .placeholder-text {
     color: rgba(255,255,255,0.7);

@@ -37,11 +37,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const species = await fetchJson(`${API}/pokemon-species/${p.id}`);
         if (species) {
             if (Array.isArray(species.flavor_text_entries)) {
-                const entry = species.flavor_text_entries.find(e => e.language && (e.language.name === 'pt' || e.language.name === 'en'));
+                // Prefer Portuguese flavor text (any 'pt*'), fallback to English
+                let entry = species.flavor_text_entries.find(e => e.language && typeof e.language.name === 'string' && e.language.name.toLowerCase().startsWith('pt'));
+                if (!entry) entry = species.flavor_text_entries.find(e => e.language && e.language.name === 'en');
                 if (entry) flavor = entry.flavor_text.replace(/\n|\f/g, ' ');
             }
             if (Array.isArray(species.genera)) {
-                const g = species.genera.find(g => g.language && (g.language.name === 'pt' || g.language.name === 'en'));
+                let g = species.genera.find(g => g.language && typeof g.language.name === 'string' && g.language.name.toLowerCase().startsWith('pt'));
+                if (!g) g = species.genera.find(g => g.language && g.language.name === 'en');
                 if (g) category = g.genus;
             }
         }
@@ -51,16 +54,30 @@ document.addEventListener('DOMContentLoaded', () => {
         const primaryTypeObj = Array.isArray(p.types) ? p.types.find(t => t.slot === 1) : null;
         const primaryTypeName = primaryTypeObj ? primaryTypeObj.type.name : (Array.isArray(p.types) && p.types.length ? p.types[0].type.name : null);
 
+        // choose image: prefer animated generation-v gif (to keep animation),
+        // fallback to official-artwork (usually transparent PNG), then front_default
         let image = '';
         try {
             const gv = p.sprites && p.sprites.versions && p.sprites.versions['generation-v'] && p.sprites.versions['generation-v']['black-white'] && p.sprites.versions['generation-v']['black-white'].animated;
+            const official = p.sprites && p.sprites.other && p.sprites.other['official-artwork'] && p.sprites.other['official-artwork'].front_default;
             if (gv && gv.front_default) image = gv.front_default;
-            else if (p.sprites && p.sprites.other && p.sprites.other['official-artwork'] && p.sprites.other['official-artwork'].front_default) image = p.sprites.other['official-artwork'].front_default;
+            else if (official) image = official;
             else if (p.sprites && p.sprites.front_default) image = p.sprites.front_default;
             else image = '';
         } catch (e) {
             image = p.sprites && p.sprites.front_default ? p.sprites.front_default : '';
         }
+
+        // debug: expose chosen image and available sprite sources in console to help troubleshooting
+        try {
+            console.debug('sobre-pokemon: chosen image for', p.name, image);
+            const available = {
+                official: p.sprites && p.sprites.other && p.sprites.other['official-artwork'] && p.sprites.other['official-artwork'].front_default,
+                animated_gv: p.sprites && p.sprites.versions && p.sprites.versions['generation-v'] && p.sprites.versions['generation-v']['black-white'] && p.sprites.versions['generation-v']['black-white'].animated && p.sprites.versions['generation-v']['black-white'].animated.front_default,
+                front: p.sprites && p.sprites.front_default
+            };
+            console.debug('sobre-pokemon: available sprites', available);
+        } catch (e) {}
 
         // stats
         const stats = (p.stats || []).map(s => ({name: s.stat.name, value: s.base_stat}));
@@ -78,7 +95,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="detail-stage">
                     <div class="detail-left">
                         <div class="detail-image">
-                            <img src="${image}" alt="${capitalize(p.name)}">
+                            <img src="${image}" alt="${capitalize(p.name)}" class="sprite-image">
+                        </div>
+
+                        <div class="stats-panel bottom-stats">
+                            <h3>Estatísticas</h3>
+                            <ul class="stats-list">
+                                ${stats.map(s => {
+                                    const pct = Math.min(100, Math.round((s.value / 180) * 100));
+                                    return `<li class="stat-row"><span class="stat-label">${capitalize(s.name)}</span><span class="stat-bar-wrap"><span class="stat-bar"><span class="stat-fill" data-pct="${pct}" style="width:0%"></span></span></span><span class="stat-value">${s.value}</span></li>`
+                                }).join('')}
+                            </ul>
+                            <div class="stat-total"><div class="total-label">Total:</div><div class="total-value">${stats.reduce((a,b)=>a+b.value,0)}</div></div>
                         </div>
                     </div>
                     <div class="detail-right">
@@ -99,17 +127,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
 
                         <div class="right-grid">
-                            <div class="stats-panel">
-                                <h3>Estatísticas</h3>
-                                <ul class="stats-list">
-                                    ${stats.map(s => {
-                                        const pct = Math.min(100, Math.round((s.value / 180) * 100));
-                                        return `<li class="stat-row"><span class="stat-label">${capitalize(s.name)}</span><span class="stat-bar-wrap"><span class="stat-bar"><span class="stat-fill" style="width:${pct}%"></span></span></span><span class="stat-value">${s.value}</span></li>`
-                                    }).join('')}
-                                </ul>
-                                <div class="stat-total"><div class="total-label">Total:</div><div class="total-value">${stats.reduce((a,b)=>a+b.value,0)}</div></div>
-                            </div>
-
                             <div class="side-panels">
                                 <div class="meta-panel about-panel">
                                     <h3>Sobre</h3>
@@ -132,7 +149,35 @@ document.addEventListener('DOMContentLoaded', () => {
             const cardNode = detailWrap.querySelector('.detail-card');
             const TYPE_SECOND_COLOR = { water: '#6cbde4', ice: '#8cddd4', rock: '#d7cd90', steel: '#58a6aa', normal: '#a3a49e', poison: '#c261d4', psychic: '#fe9f92', fighting: '#e74347', fire: '#fbae46', flying: '#a6c2f2', ghost: '#7773d4', grass: '#5ac178', electric: '#fbe273', fairy: '#f3a7e7', dark: '#6e7587', dragon: '#0180c7', bug: '#afc836', ground: '#d29463' };
             const color = primary && TYPE_SECOND_COLOR[primary] ? TYPE_SECOND_COLOR[primary] : '#764ba2';
-            if (cardNode) cardNode.style.setProperty('--card-primary-color', color);
+            // compute a darker shade (~50%) for the background so the panel looks deeper
+            function hexToRgb(h) {
+                const hex = h.replace('#','');
+                const bigint = parseInt(hex.length === 3 ? hex.split('').map(c=>c+c).join('') : hex, 16);
+                const r = (bigint >> 16) & 255;
+                const g = (bigint >> 8) & 255;
+                const b = bigint & 255;
+                return {r,g,b};
+            }
+            function rgbToHex(r,g,b) {
+                const toHex = (n) => n.toString(16).padStart(2,'0');
+                return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+            }
+            function darkenHex(hex, factor) {
+                try {
+                    const {r,g,b} = hexToRgb(hex);
+                    const nr = Math.max(0, Math.round(r * (1 - factor)));
+                    const ng = Math.max(0, Math.round(g * (1 - factor)));
+                    const nb = Math.max(0, Math.round(b * (1 - factor)));
+                    return rgbToHex(nr,ng,nb);
+                } catch (e) { return hex }
+            }
+
+            const darker = darkenHex(color, 0.5); // 50% darker
+            if (cardNode) {
+                // store base color too in case we want the original color elsewhere
+                cardNode.style.setProperty('--card-primary-base', color);
+                cardNode.style.setProperty('--card-primary-color', darker);
+            }
             // also set a data attr for styling if needed
             if (cardNode && primary) cardNode.setAttribute('data-primary-type', primary);
         } catch (e) {}
@@ -176,10 +221,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
                 const weaknessArr = Array.from(weaknessSet);
-                // render pills with icon + name
-                weakWrap.innerHTML = weaknessArr.map(w => `<span class="type-pill weak" data-type="${w}"><span class="type-icon" data-type="${w}"></span><span class="type-name">${capitalize(w)}</span></span>`).join(' ');
+                // render pills with circular badge + name
+                weakWrap.innerHTML = weaknessArr.map(w => `<span class="type-pill weak" data-type="${w}"><span class="type-badge glyph" data-type="${w}"></span><span class="type-name">${capitalize(w)}</span></span>`).join(' ');
 
-                // inline icons and color them
+                // inline icons and color them (badge)
                 const weakIcons = weakWrap.querySelectorAll('.type-pill');
                 for (const node of weakIcons) {
                     const t = node.getAttribute('data-type');
@@ -188,7 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const res = await fetch(url);
                         if (!res.ok) throw new Error('not ok ' + res.status);
                         const svgText = await res.text();
-                        const iconEl = node.querySelector('.type-icon');
+                        const iconEl = node.querySelector('.type-badge');
                         if (iconEl) iconEl.innerHTML = svgText;
                     } catch (err) {
                         // ignore
@@ -198,6 +243,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         const color = TYPE_SECOND_COLOR[t] || '#764ba2';
                         node.style.background = color;
                         node.style.color = '#06221a';
+                        const badge = node.querySelector('.type-badge');
+                        if (badge) badge.style.background = 'rgba(255,255,255,0.12)';
                     } catch (e) {}
                 }
             } catch (err) {
@@ -206,6 +253,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         inlineTypeIcons();
+
+        // animate stat fills after inlining icons (mirror comparator behavior)
+        try {
+            const fills = detailWrap.querySelectorAll('.stat-fill');
+            fills.forEach((el, idx) => {
+                const pct = el.getAttribute('data-pct') || '0';
+                setTimeout(() => { el.style.width = pct + '%'; }, 80 + idx * 80);
+            });
+        } catch (e) {}
 
         // back button
         const backBtn = document.getElementById('backBtn');
