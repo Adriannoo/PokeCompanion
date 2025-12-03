@@ -47,18 +47,19 @@ h1, h2, h3, h4, button, .nav-item span {
 .stripe-yellow {
     height: calc(400 / 1080 * 100vh);
     background: var(--amarelo-dourado);
-    left: calc(-135 / 1920 * 100vw);
+    left: calc(-245 / 1920 * 100vw);
 }
 
 .stripe-blue {
     height: calc(600 / 1080 * 100vh);
     background: var(--azul-cerulean);
-    left: calc(-690 / 1920 * 100vw);
+    left: calc(-800 / 1920 * 100vw);
 }
 
 .stripe-red {
     height: calc(400 / 1080 * 100vh);
     background: var(--vermelho-boston);
+    left: calc(-1355 / 1920 * 100vw)
 }
 
 /* HEADER */
@@ -627,8 +628,7 @@ h1, h2, h3, h4, button, .nav-item span {
     margin-top: auto;
 }
 
-.footer-left,
-.footer-right {
+.footer-left, .footer-right {
     display: flex;
     flex-direction: column;
     gap: clamp(10px, 2vh, 20px);
@@ -662,7 +662,7 @@ h1, h2, h3, h4, button, .nav-item span {
 .footer-links ul {
     list-style: disc;
     padding-left: 1.5rem;
-    font-family: "Fredoka", sans-serif;
+    font-family: 'Fredoka', sans-serif;
     font-weight: 400;
     font-size: clamp(14px, 1.5vw, 24px);
     color: white;
