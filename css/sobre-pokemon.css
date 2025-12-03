@@ -130,11 +130,11 @@ body { background: #000; color: #fff; font-family: 'Fredoka', sans-serif; }
 
 /* responsive */
 @media (max-width: 1100px) {
-  .detail-stage { grid-template-columns: 1fr; }
-  .detail-left, .detail-right { width: 100%; }
-  .detail-image img { width:72% }
-  .right-grid { grid-template-columns: 1fr }
-  .weak-list { flex-direction:row; flex-wrap:wrap }
+    .detail-stage { grid-template-columns: 1fr; }
+    .detail-left, .detail-right { width: 100%; }
+    .detail-image img { width:72% }
+    .right-grid { grid-template-columns: 1fr }
+    .weak-list { flex-direction:row; flex-wrap:wrap }
 }
 
 /* defensive: avoid the back button overlapping if some global header is sticky */
