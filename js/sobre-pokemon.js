@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const species = await fetchJson(`${API}/pokemon-species/${p.id}`);
         if (species) {
             if (Array.isArray(species.flavor_text_entries)) {
-                // Prefer Portuguese flavor text (any 'pt*'), fallback to English
+                // Preferir o texto descritivo em português (qualquer variante ‘pt’), usar o inglês como alternativa (fallback)
                 let entry = species.flavor_text_entries.find(e => e.language && typeof e.language.name === 'string' && e.language.name.toLowerCase().startsWith('pt'));
                 if (!entry) entry = species.flavor_text_entries.find(e => e.language && e.language.name === 'en');
                 if (entry) flavor = entry.flavor_text.replace(/\n|\f/g, ' ');
@@ -54,8 +54,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const primaryTypeObj = Array.isArray(p.types) ? p.types.find(t => t.slot === 1) : null;
         const primaryTypeName = primaryTypeObj ? primaryTypeObj.type.name : (Array.isArray(p.types) && p.types.length ? p.types[0].type.name : null);
 
-        // choose image: prefer animated generation-v gif (to keep animation),
-        // fallback to official-artwork (usually transparent PNG), then front_default
+        // escolher imagem: preferir o gif animado da generation-v (para manter a animação),
+        // usar como alternativa (fallback) a official-artwork (geralmente PNG transparente),
+        // e depois front_default.
         let image = '';
         try {
             const gv = p.sprites && p.sprites.versions && p.sprites.versions['generation-v'] && p.sprites.versions['generation-v']['black-white'] && p.sprites.versions['generation-v']['black-white'].animated;
@@ -68,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
             image = p.sprites && p.sprites.front_default ? p.sprites.front_default : '';
         }
 
-        // debug: expose chosen image and available sprite sources in console to help troubleshooting
+        // debug: expor no console a imagem escolhida e as fontes de sprites disponíveis para ajudar na solução de problemas
         try {
             console.debug('sobre-pokemon: chosen image for', p.name, image);
             const available = {
@@ -79,10 +80,10 @@ document.addEventListener('DOMContentLoaded', () => {
             console.debug('sobre-pokemon: available sprites', available);
         } catch (e) {}
 
-        // stats
+        // Status
         const stats = (p.stats || []).map(s => ({name: s.stat.name, value: s.base_stat}));
 
-        // tipos (array) and primary type name (slot-aware)
+        // tipos (array) e nome do tipo primário (ciente do slot)
         const types = (p.types || []).map(t => t.type.name);
         const primary = primaryTypeName || (types.length ? types[0] : null);
 
@@ -144,12 +145,12 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         detailWrap.innerHTML = html;
-        // set card primary color based on primary type (slot=1 aware)
+        // definir a cor primária do card com base no tipo primário (considerando slot=1)
         try {
             const cardNode = detailWrap.querySelector('.detail-card');
             const TYPE_SECOND_COLOR = { water: '#6cbde4', ice: '#8cddd4', rock: '#d7cd90', steel: '#58a6aa', normal: '#a3a49e', poison: '#c261d4', psychic: '#fe9f92', fighting: '#e74347', fire: '#fbae46', flying: '#a6c2f2', ghost: '#7773d4', grass: '#5ac178', electric: '#fbe273', fairy: '#f3a7e7', dark: '#6e7587', dragon: '#0180c7', bug: '#afc836', ground: '#d29463' };
             const color = primary && TYPE_SECOND_COLOR[primary] ? TYPE_SECOND_COLOR[primary] : '#764ba2';
-            // compute a darker shade (~50%) for the background so the panel looks deeper
+            // calcular um tom mais escuro (~50%) para o fundo, para que o painel pareça mais profundo
             function hexToRgb(h) {
                 const hex = h.replace('#','');
                 const bigint = parseInt(hex.length === 3 ? hex.split('').map(c=>c+c).join('') : hex, 16);
@@ -172,17 +173,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 } catch (e) { return hex }
             }
 
-            const darker = darkenHex(color, 0.5); // 50% darker
+            const darker = darkenHex(color, 0.5); // 50% mais escuro
             if (cardNode) {
-                // store base color too in case we want the original color elsewhere
+                // armazenar também a cor base caso queiramos usar a cor original em outro lugar
                 cardNode.style.setProperty('--card-primary-base', color);
                 cardNode.style.setProperty('--card-primary-color', darker);
             }
-            // also set a data attr for styling if needed
+            // também definir um atributo data para estilização, se necessário
             if (cardNode && primary) cardNode.setAttribute('data-primary-type', primary);
         } catch (e) {}
 
-        // inline glyph SVGs for types in header and for weaknesses
+        // inserir inline os SVGs de glifo para os tipos no cabeçalho e para as fraquezas
         async function inlineTypeIcons() {
             const headerIcons = detailWrap.querySelectorAll('.type-pill .type-icon');
             for (const el of headerIcons) {
@@ -197,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } catch (err) {
                     el.textContent = '';
                 }
-                // color the pill based on type
+                // colorir a ‘pílula’ com base no tipo
                 try {
                     const TYPE_SECOND_COLOR = { water: '#6cbde4', ice: '#8cddd4', rock: '#d7cd90', steel: '#58a6aa', normal: '#a3a49e', poison: '#c261d4', psychic: '#fe9f92', fighting: '#e74347', fire: '#fbae46', flying: '#a6c2f2', ghost: '#7773d4', grass: '#5ac178', electric: '#fbe273', fairy: '#f3a7e7', dark: '#6e7587', dragon: '#0180c7', bug: '#afc836', ground: '#d29463' };
                     const pill = el.closest('.type-pill');
@@ -209,7 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } catch (e) {}
             }
 
-            // fetch weaknesses for the pokemon types and render
+            // buscar as fraquezas para os tipos do Pokémon e renderizá-las
             const weakWrap = detailWrap.querySelector('.weak-list');
             if (!weakWrap) return;
             try {
@@ -221,10 +222,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
                 const weaknessArr = Array.from(weaknessSet);
-                // render pills with circular badge + name
+                // renderizar as pílulas com emblema circular + nome
                 weakWrap.innerHTML = weaknessArr.map(w => `<span class="type-pill weak" data-type="${w}"><span class="type-badge glyph" data-type="${w}"></span><span class="type-name">${capitalize(w)}</span></span>`).join(' ');
 
-                // inline icons and color them (badge)
+                // inserir os ícones inline e colorí-los (emblema)
                 const weakIcons = weakWrap.querySelectorAll('.type-pill');
                 for (const node of weakIcons) {
                     const t = node.getAttribute('data-type');
@@ -254,7 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         inlineTypeIcons();
 
-        // animate stat fills after inlining icons (mirror comparator behavior)
+        // animar o preenchimento dos status após inserir os ícones inline (espelhar o comportamento do comparador)
         try {
             const fills = detailWrap.querySelectorAll('.stat-fill');
             fills.forEach((el, idx) => {
@@ -263,7 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         } catch (e) {}
 
-        // back button
+        // botão de voltar
         const backBtn = document.getElementById('backBtn');
         if (backBtn) backBtn.addEventListener('click', () => history.back());
     }

@@ -1,4 +1,4 @@
-/* pokedex.js - versão robusta com debugging e fallbacks */
+/* pokedex.js */
 document.addEventListener("DOMContentLoaded", () => {
     const API_URL = "https://pokeapi.co/api/v2/pokemon/";
 
@@ -141,7 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
             num.className = "pokemon-number";
             num.textContent = `#${String(p.id).padStart(4, "0")}`;
 
-            // types badges (show full icon SVGs from icones-tipos; fallback to text)
+            // insígnias de tipos (exibir os SVGs completos dos ícones de tipo; usar texto como alternativa)
             const typesWrap = document.createElement("div");
             typesWrap.className = "pokemon-types";
         if (p.types && p.types.length) {
@@ -155,7 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     img.alt = typeName + ' icon';
                     img.src = `../assets/types/icones-tipos/${typeName}.svg`;
                     img.onerror = () => {
-                        // fallback to text if icon not available
+                        // usar texto como alternativa se o ícone não estiver disponível
                         img.remove();
                         span.textContent = typeName;
                     };
@@ -182,9 +182,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         pokemonGrid.appendChild(frag);
-        // after DOM insertion, try to inline any SVGs used as icons so we can
-        // remove embedded white backgrounds and better control alignment
-        try { inlineTypeBadgeSvgs(); } catch (e) { /* fail silently */ }
+        // após a inserção no DOM, tentar incorporar (inline) quaisquer SVGs usados como ícones para 
+        // que possamos remover fundos brancos embutidos e ter melhor controle de alinhamento
+        try { inlineTypeBadgeSvgs(); } catch (e) { /* falhar silenciosamente */ }
     }
 
     function capitalize(s) {
@@ -200,9 +200,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Inline SVGs for type badges in cards: fetch SVG source, remove background rects
-    // and replace the <img> with the parsed <svg>. This lets us ensure transparency
-    // and consistent centering even when the exported SVGs contain white boxes.
+    // SVGs inline para as insígnias de tipo nos cards: buscar o código-fonte do SVG, 
+    // remover os retângulos de fundo e substituir o <img> pelo <svg> processado. 
+    // Isso nos permite garantir transparência e centralização consistente mesmo quando os SVGs 
+    // exportados contêm caixas brancas.”
     function inlineTypeBadgeSvgs() {
         const imgs = document.querySelectorAll('.type-badge.icon-only img');
         imgs.forEach(img => {
@@ -217,32 +218,32 @@ document.addEventListener("DOMContentLoaded", () => {
                 const svg = doc.querySelector('svg');
                 if (!svg) return;
 
-                // Remove any full-size rects that act as white backgrounds
+                // Remover quaisquer retângulos em tamanho completo que funcionem como fundos brancos
                 const rects = svg.querySelectorAll('rect');
                 rects.forEach(r => {
                     const fill = (r.getAttribute('fill') || '').trim().toLowerCase();
                     const x = r.getAttribute('x') || '0';
                     const y = r.getAttribute('y') || '0';
-                    // remove rects that look like full-backgrounds (white or positioned at 0,0)
+                    // remover retângulos que aparentem ser fundos completos (brancos ou posicionados em 0,0)
                     if (fill === '#fff' || fill === '#ffffff' || fill === 'white' || (x === '0' && y === '0')) {
                         r.parentNode && r.parentNode.removeChild(r);
                     }
                 });
 
-                // Strip width/height to allow CSS sizing, keep viewBox
+                // Remover (strip) width/height para permitir dimensionamento via CSS, mantendo o viewBox
                 svg.removeAttribute('width');
                 svg.removeAttribute('height');
                 svg.style.width = '92%';
                 svg.style.height = '92%';
                 svg.style.display = 'block';
 
-                // copy any important attributes to the svg in the document
+                // copiar quaisquer atributos importantes para o svg no documento
                 svg.setAttribute('preserveAspectRatio', svg.getAttribute('preserveAspectRatio') || 'xMidYMid meet');
 
-                // replace the img node with the svg
+                // substituir o nó img pelo svg
                 img.replaceWith(svg);
             }).catch(() => {
-                // leave the original img if fetching or parsing fails
+                // manter a imagem original caso a busca ou a análise falhe
             });
         });
     }
@@ -369,21 +370,21 @@ document.addEventListener("DOMContentLoaded", () => {
         const items = document.querySelectorAll('.type-item');
         if (!items || items.length === 0) return;
         items.forEach(it => {
-            // inject glyph SVG (drawing) into the type-icon container
+            // injetar o SVG do glifo (desenho) no contêiner do ícone de tipo
             const icon = it.querySelector('.type-icon');
             if (icon) {
                 const typeClass = Array.from(icon.classList).find(c => c !== 'type-icon');
                 if (typeClass) {
-                    // fetch the glyph SVG and inline it so it can sit over the colored background
+                    // buscar o SVG do glifo e inseri-lo inline para que ele possa ficar sobre o fundo colorido
                     const glyphUrl = `../assets/types/tipos-desenho/${typeClass}.svg`;
                     fetch(glyphUrl).then(res => {
                         if (!res.ok) throw new Error('glyph not found');
                         return res.text();
                     }).then(svgText => {
-                        // sanitize basic script tags out (defensive)
+                        // remover (sanear) tags básicas de script (por segurança)
                         const safe = svgText.replace(/<\/?script[\s\S]*?>/gi, '');
                         icon.innerHTML = safe;
-                        // ensure svg element has no inline width/height that breaks sizing
+                        // garantir que o elemento svg não tenha width/height inline que quebrem o dimensionamento
                         const svg = icon.querySelector('svg');
                         if (svg) {
                             svg.setAttribute('width', '');
@@ -393,8 +394,8 @@ document.addEventListener("DOMContentLoaded", () => {
                             svg.style.display = 'block';
                         }
                     }).catch(() => {
-                        // fallback: show nothing (keep colored circle)
-                        // leave icon content empty
+                        // alternativa (fallback): não mostrar nada (manter o círculo colorido)
+                        // deixar o conteúdo do ícone vazio
                     });
                 }
             }

@@ -107,7 +107,7 @@ async function atualizarCards() {
       </div>
     `;
 
-    // after insert animate stat fills (horizontal)
+    // após inserir, animar o preenchimento dos status (horizontal)
     try {
       const fills = card.querySelectorAll('.stat-fill');
       fills.forEach((el, idx) => {
@@ -116,17 +116,21 @@ async function atualizarCards() {
       });
     } catch (e) {}
 
-    // inline svg icons for weakness badges and color pills
+    // ícones SVG inline para badges de fraqueza e ‘pílulas’ de cor
     try{
-      const TYPE_SECOND_COLOR = { water: '#6cbde4', ice: '#8cddd4', rock: '#d7cd90', steel: '#58a6aa', normal: '#a3a49e', poison: '#c261d4', psychic: '#fe9f92', fighting: '#e74347', fire: '#fbae46', flying: '#a6c2f2', ghost: '#7773d4', grass: '#5ac178', electric: '#fbe273', fairy: '#f3a7e7', dark: '#6e7587', dragon: '#0180c7', bug: '#afc836', ground: '#d29463' };
-      // header type icons
+      const TYPE_SECOND_COLOR = { water: '#6cbde4', ice: '#8cddd4', rock: '#d7cd90', 
+        steel: '#58a6aa', normal: '#a3a49e', poison: '#c261d4', psychic: '#fe9f92', 
+        fighting: '#e74347', fire: '#fbae46', flying: '#a6c2f2', ghost: '#7773d4', grass: '#5ac178', 
+        electric: '#fbe273', fairy: '#f3a7e7', dark: '#6e7587', dragon: '#0180c7', bug: '#afc836', 
+        ground: '#d29463' };
+      // ícones de tipos no cabeçalho
       const headerIcons = card.querySelectorAll('.type-pill .type-icon');
       for(const el of headerIcons){
         const t = el.getAttribute('data-type');
         const url = '../assets/types/tipos-desenho/'+t+'.svg';
         try{ const res = await fetch(url); if(res.ok){ el.innerHTML = await res.text(); el.classList.add('has-svg'); } }catch(e){}
       }
-      // weakness badges
+      // emblemas de fraqueza
       const weakBadges = card.querySelectorAll('.type-pill.weak');
       for(const node of weakBadges){
         const t = node.getAttribute('data-type');
