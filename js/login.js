@@ -33,6 +33,7 @@ switchLink.addEventListener('click', (e) => {
     }
 
     authForm.reset();
+    Interface.mensagem('');
 });
 
 //----------------------------------------------------
@@ -50,19 +51,19 @@ authForm.addEventListener('submit', (e) => {
     //---------------------------
     if (!isLogin) {
         if (!email.includes("@")) {
-            alert("Digite um e-mail válido!");
+            Interface.mensagem("Digite um e-mail válido!");
             return;
         }
 
         if (localStorage.getItem(username)) {
-            alert("Usuário já existe!");
+            Interface.mensagem("Usuário já existe!");
             return;
         }
 
         const userData = { email, username, password };
         localStorage.setItem(username, JSON.stringify(userData));
 
-        alert("Registro realizado com sucesso!");
+        Interface.mensagem("Registro realizado. Agora faça login.", "success");
 
         isLogin = true;
         authTitle.textContent = 'Login';
@@ -81,20 +82,19 @@ authForm.addEventListener('submit', (e) => {
     const stored = localStorage.getItem(username);
 
     if (!stored) {
-        alert("Usuário não encontrado!");
+        Interface.mensagem("Usuário não encontrado!");
         return;
     }
 
     const userData = JSON.parse(stored);
 
     if (userData.password !== password) {
-        alert("Senha incorreta!");
+        Interface.mensagem("Senha incorreta!");
         return;
     }
 
     localStorage.setItem("loggedUser", username);
 
-    alert("Login realizado!");
     window.location.href = "pagina-inicial.html";
 });
 

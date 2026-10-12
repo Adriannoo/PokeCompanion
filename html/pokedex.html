@@ -7,8 +7,9 @@
     <link rel="stylesheet" href="../css/pokedex.css">
     <link rel="stylesheet" href="../css/styleguide.css">
     <link rel="icon" type="imagem/jpg" href="../assets/icone1.png">
+    <link rel="stylesheet" href="../css/layout.css?v=7">
 </head>
-<body>
+<body class="page-pokedex">
 
     <!-- Header -->
     <header class="header">
@@ -19,12 +20,12 @@
             </a>
 
             <a class="nav-item">
-                <div class="nav icon-2"></div>
+                <div class="nav-icon icon-2"></div>
                 <span>Pokédex</span>
             </a>
 
             <a class="nav-item" href="comparador.html">
-                <div class="nav icon-3"></div>
+                <div class="nav-icon icon-3"></div>
                 <span>Comparar</span>
             </a>
 
@@ -53,84 +54,33 @@
         </div>
 
         <!-- Sidebar -->
+        <div class="pokedex-layout">
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h2>TIPOS</h2>
+                <h2>Explorar</h2>
                 <hr>
             </div>
-            <div class="types-grid">
-                <div class="type-item">
-                    <div class="type-icon water"></div>
-                    <span>Água</span>
-                </div>
-                <div class="type-item">
-                    <div class="type-icon ice"></div>
-                    <span>Gelo</span>
-                </div>
-                <div class="type-item">
-                    <div class="type-icon rock"></div>
-                    <span>Pedra</span>
-                </div>
-                <div class="type-item">
-                    <div class="type-icon steel"></div>
-                    <span>Metal</span>
-                </div>
-                <div class="type-item">
-                    <div class="type-icon normal"></div>
-                    <span>Normal</span>
-                </div>
-                <div class="type-item">
-                    <div class="type-icon poison"></div>
-                    <span>Veneno</span>
-                </div>
-                <div class="type-item">
-                    <div class="type-icon psychic"></div>
-                    <span>Psíquico</span>
-                </div>
-                <div class="type-item">
-                    <div class="type-icon fighting"></div>
-                    <span>Lutador</span>
-                </div>
-                <div class="type-item">
-                    <div class="type-icon fire"></div>
-                    <span>Fogo</span>
-                </div>
-                <div class="type-item">
-                    <div class="type-icon flying"></div>
-                    <span>Voador</span>
-                </div>
-                <div class="type-item">
-                    <div class="type-icon ghost"></div>
-                    <span>Fantasma</span>
-                </div>
-                <div class="type-item">
-                    <div class="type-icon grass"></div>
-                    <span>Planta</span>
-                </div>
-                <div class="type-item">
-                    <div class="type-icon electric"></div>
-                    <span>Elétrico</span>
-                </div>
-                <div class="type-item">
-                    <div class="type-icon fairy"></div>
-                    <span>Fada</span>
-                </div>
-                <div class="type-item">
-                    <div class="type-icon dark"></div>
-                    <span>Sombrio</span>
-                </div>
-                <div class="type-item">
-                    <div class="type-icon dragon"></div>
-                    <span>Dragão</span>
-                </div>
-                <div class="type-item">
-                    <div class="type-icon bug"></div>
-                    <span>Inseto</span>
-                </div>
-                <div class="type-item">
-                    <div class="type-icon ground"></div>
-                    <span>Terrestre</span>
-                </div>
+            <button id="favoritesFilter" class="favorites-filter" type="button" aria-pressed="false">☆ Favoritos (0)</button>
+            <button class="filters-toggle" id="filtersToggle" type="button" aria-expanded="false" aria-controls="typeFilters">Mostrar tipos ▾</button>
+            <div class="types-grid" id="typeFilters">
+                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon water"></span><span>Água</span></button>
+                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon ice"></span><span>Gelo</span></button>
+                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon rock"></span><span>Pedra</span></button>
+                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon steel"></span><span>Metal</span></button>
+                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon normal"></span><span>Normal</span></button>
+                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon poison"></span><span>Veneno</span></button>
+                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon psychic"></span><span>Psíquico</span></button>
+                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon fighting"></span><span>Lutador</span></button>
+                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon fire"></span><span>Fogo</span></button>
+                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon flying"></span><span>Voador</span></button>
+                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon ghost"></span><span>Fantasma</span></button>
+                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon grass"></span><span>Planta</span></button>
+                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon electric"></span><span>Elétrico</span></button>
+                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon fairy"></span><span>Fada</span></button>
+                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon dark"></span><span>Sombrio</span></button>
+                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon dragon"></span><span>Dragão</span></button>
+                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon bug"></span><span>Inseto</span></button>
+                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon ground"></span><span>Terrestre</span></button>
             </div>
         </aside>
 
@@ -141,7 +91,7 @@
             <div class="search-container">
                 <div class="search-bar">
                     <span class="search-icon">🔍</span>
-                    <input type="text" placeholder="Procure seu Pokémon...">
+                    <input type="text" aria-label="Nome ou número do Pokémon" placeholder="Nome ou número do Pokémon">
                 </div>
                 <button class="search-btn">Pesquisar</button>
             </div>
@@ -150,7 +100,7 @@
             <div class="pokemon-board">
                 <div class="board-header">
                     <div class="board-controls">
-                        <h3>Filtrar / Organizar Por</h3>
+                        <h3>Pokédex</h3>
                         <div class="sort-select">
                             <button class="sort-btn">
                                 <img src="../assets/pokeball-icon.svg" alt="Pokeball" class="pokeball-icon">
@@ -158,32 +108,17 @@
                                 <span class="arrow">▼</span>
                             </button>
                             <ul class="sort-options">
-                                <li data-sort="az">A - Z</li>
-                                <li data-sort="za">Z - A</li>
-                                <li data-sort="id-asc">Crescente</li>
-                                <li data-sort="id-desc">Decrescente</li>
+                                <li data-sort="az"><button type="button">A - Z</button></li>
+                                <li data-sort="za"><button type="button">Z - A</button></li>
+                                <li data-sort="id-asc"><button type="button">Crescente</button></li>
+                                <li data-sort="id-desc"><button type="button">Decrescente</button></li>
                             </ul>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Grid de Cards -->
-                <div class="pokemon-grid">
-
-                    <div class="pokemon-card">
-                        <div class="card-image">
-                            <img src="https://via.placeholder.com/270x270" alt="Pokemon">
-                        </div>
-                        <div class="card-info">
-                            <h4>Pokémon</h4>
-                            <p class="pokemon-number">#0000</p>
-                            <div class="pokemon-types">
-                                <span class="type-badge water">Água</span>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
+                <div class="pokemon-grid" aria-live="polite"></div>
 
                 <div style="text-align:center; margin-top:2vh;">
                     <button class="load-more-btn">Carregar mais</button>
@@ -191,6 +126,7 @@
 
             </div>
         </main>
+        </div>
 
         <!-- Footer -->
         <footer class="footer">
@@ -199,9 +135,9 @@
                 <div class="footer-links">
                     <h4>Links</h4>
                     <ul>
-                        <li>Pagina Inicial</li>
-                        <li>Pokédex</li>
-                        <li>Comparar</li>
+                        <li><a href="pagina-inicial.html">Pagina Inicial</a></li>
+                        <li><a href="pokedex.html">Pokédex</a></li>
+                        <li><a href="comparador.html">Comparar</a></li>
                     </ul>
                 </div>
             </div>
@@ -223,6 +159,8 @@
 
     </div>
 
+    <script src="../js/interface.js"></script>
+    <script src="../js/favoritos.js"></script>
     <script src="../js/pokedex.js"></script>
 </body>
 </html>

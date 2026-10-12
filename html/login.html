@@ -7,8 +7,9 @@
     <link rel="stylesheet" href="../css/login.css">
     <link rel="stylesheet" href="../css/styleguide.css">
     <link rel="icon" type="imagem/jpg" href="../assets/icone1.png">
+    <link rel="stylesheet" href="../css/layout.css?v=7">
 </head>
-<body>
+<body class="page-login">
     <!-- Header -->
     <header class="header">
         <nav class="nav">
@@ -16,12 +17,12 @@
                 <div class="nav-icon icon-1"></div>
                 <span>Página Inicial</span>
             </a>
-            <a class="nav-item" href="pokedex.html ">
-                <div class="nav icon-2"></div>
+            <a class="nav-item" href="pokedex.html">
+                <div class="nav-icon icon-2"></div>
                 <span>Pokédex</span>
             </a>
             <a class="nav-item" href="comparador.html">
-                <div class="nav icon-3"></div>
+                <div class="nav-icon icon-3"></div>
                 <span>Comparar</span>
             </a>
             <a class="login-btn">Fazer login</a>
@@ -42,6 +43,8 @@
     <div class="login-box" id="loginBox">
         <h2 id="authTitle">Login</h2>
 
+        <p class="auth-note">Seu espaço de treinador. Login demonstrativo neste navegador.</p>
+        <p id="feedback" class="feedback" role="status" hidden></p>
         <form id="authForm">
 
             <!-- Campo Email (somente no registro) -->
@@ -66,6 +69,7 @@
 
         
     </div>
+    <script src="../js/interface.js"></script>
     <script src="../js/login.js"></script>
 </body>
 </html>

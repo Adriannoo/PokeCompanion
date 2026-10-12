@@ -1,18 +1,37 @@
-//----------------------------------------------------
-// BUSCAR SPRITE DO BLASTOISE
-//----------------------------------------------------
-const sprite_blastoise = document.getElementById("blastoise-gif");
+// Escolhe um Pokemon da Pokedex nacional a cada recarga.
+const sprite_blastoise = document.getElementById('blastoise-gif');
 
-fetch("https://pokeapi.co/api/v2/pokemon/blastoise")
-  .then(response => response.json())
-  .then(data => {
-    const sprite_animado =
-      data.sprites.versions["generation-v"]["black-white"].animated.front_default;
+async function carregarPokemonInicial() {
+    try {
+        const countResponse = await fetch('https://pokeapi.co/api/v2/pokemon-species?limit=1');
+        if (!countResponse.ok) throw new Error('Catalogo indisponivel');
+        const { count } = await countResponse.json();
+        let id = Math.floor(Math.random() * count) + 1;
+        try {
+            const previous = Number(sessionStorage.getItem('homePokemonId'));
+            if (count > 1 && id === previous) id = id % count + 1;
+            sessionStorage.setItem('homePokemonId', String(id));
+        } catch { /* O sorteio funciona mesmo sem armazenamento da sessao. */ }
+        const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+        if (!response.ok) throw new Error('Pokemon indisponivel');
+        const data = await response.json();
+        sprite_blastoise.src = data.sprites?.versions?.['generation-v']?.['black-white']?.animated?.front_default
+            || data.sprites?.other?.['official-artwork']?.front_default
+            || data.sprites?.front_default || '../assets/pokeball-icon.svg';
+        sprite_blastoise.alt = data.name;
+        sprite_blastoise.title = data.name;
+    } catch (error) {
+        sprite_blastoise.src = '../assets/pokeball-icon.svg';
+        sprite_blastoise.alt = 'Pokemon indisponivel';
+        console.warn('Erro ao carregar Pokemon inicial', error);
+    }
+    sprite_blastoise.onerror = () => {
+        sprite_blastoise.onerror = null;
+        sprite_blastoise.src = '../assets/pokeball-icon.svg';
+    };
+}
 
-    sprite_blastoise.src = sprite_animado;
-  })
-  .catch(error => console.error("Erro ao buscar Pokémon:", error));
-
+if (sprite_blastoise) carregarPokemonInicial();
 
 //----------------------------------------------------
 // ELEMENTOS DO HEADER

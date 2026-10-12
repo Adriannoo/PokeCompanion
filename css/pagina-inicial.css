@@ -361,3 +361,5 @@ body {
     transform: scale(1.05);
     background: #b10d0d;
 }
+/* Inclui padding e bordas na largura dos blocos. */
+.frame-sobre, .footer { box-sizing: border-box; max-width: 100%; }

@@ -484,3 +484,17 @@ body {
     transform: scale(1.05);
     background: #b10d0d;
 }
+/* O formulario acompanha a largura da tela em vez de ficar fora dela. */
+.login-box, .login-box input { box-sizing: border-box; }
+@media (max-width: 760px) {
+    .login-box { position: relative; top: auto; right: auto; width: min(520px, calc(100% - 32px)); padding: 24px; margin: 32px auto; }
+    .login-box h2 { margin-top: 0; }
+    .background-container { position: fixed; top: 0; height: 100vh; }
+    .header { padding: 16px; }
+    .nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; max-width: 100%; }
+    .nav-item { height: auto; min-width: 0; gap: 6px; }
+    .nav-item span { font-size: 18px; }
+    .icon-1, .icon-2, .icon-3 { width: 32px; height: 32px; flex-shrink: 0; }
+    .login-btn { box-sizing: border-box; padding: 12px; border: 2px solid black; border-radius: 12px; max-width: 100%; overflow-wrap: anywhere; }
+    .login-box input[type="text"], .login-box input[type="password"], .login-box input[type="email"] { font-size: 16px; }
+}

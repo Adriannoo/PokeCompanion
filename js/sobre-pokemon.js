@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <ul class="stats-list">
                                 ${stats.map(s => {
                                     const pct = Math.min(100, Math.round((s.value / 180) * 100));
-                                    return `<li class="stat-row"><span class="stat-label">${capitalize(s.name)}</span><span class="stat-bar-wrap"><span class="stat-bar"><span class="stat-fill" data-pct="${pct}" style="width:0%"></span></span></span><span class="stat-value">${s.value}</span></li>`
+                                    return `<li class="stat-row"><span class="stat-label">${Interface.stat(s.name)}</span><span class="stat-bar-wrap"><span class="stat-bar"><span class="stat-fill" data-pct="${pct}" style="width:0%"></span></span></span><span class="stat-value">${s.value}</span></li>`
                                 }).join('')}
                             </ul>
                             <div class="stat-total"><div class="total-label">Total:</div><div class="total-value">${stats.reduce((a,b)=>a+b.value,0)}</div></div>
@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <h1>${capitalize(p.name)}</h1>
                                 <p class="pokemon-number">#${String(p.id).padStart(4, '0')}</p>
                                 <div class="pokemon-types">
-                                    ${types.map(t => `<span class="type-pill" data-type="${t}"><span class="type-icon" data-type="${t}"></span><span class="type-name">${capitalize(t)}</span></span>`).join(' ')}
+                                    ${types.map(t => `<span class="type-pill" data-type="${t}"><span class="type-icon" data-type="${t}"></span><span class="type-name">${Interface.tipo(t)}</span></span>`).join(' ')}
                                 </div>
                             </div>
                             <div class="meta-card">
@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <p class="flavor">${flavor}</p>
                                 </div>
                                 <div class="weaknesses">
-                                    <h3>Fraquezas</h3>
+                                    <h3>Fraquezas</h3><p class="damage-note">Dano recebido pelos tipos, sem habilidades.</p>
                                     <div class="weak-list"></div>
                                 </div>
                             </div>
@@ -145,6 +145,8 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         detailWrap.innerHTML = html;
+        detailWrap.querySelector('.back-row').appendChild(Favoritos.criarBotao(p.id, p.name));
+
         // definir a cor primária do card com base no tipo primário (considerando slot=1)
         try {
             const cardNode = detailWrap.querySelector('.detail-card');
@@ -214,16 +216,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const weakWrap = detailWrap.querySelector('.weak-list');
             if (!weakWrap) return;
             try {
-                const weaknessSet = new Set();
+                // Multiplica as relacoes dos dois tipos, incluindo imunidades.
+                const multipliers = Object.create(null);
                 for (const t of types) {
                     const tr = await fetchJson(`${API}/type/${t}`);
-                    if (tr && tr.damage_relations && Array.isArray(tr.damage_relations.double_damage_from)) {
-                        tr.damage_relations.double_damage_from.forEach(w => weaknessSet.add(w.name));
+                    if (!tr || !tr.damage_relations) throw new Error('Tipo indisponivel');
+                    for (const [relation, factor] of [['double_damage_from', 2], ['half_damage_from', 0.5], ['no_damage_from', 0]]) {
+                        for (const damageType of tr.damage_relations[relation] || []) {
+                            multipliers[damageType.name] = (multipliers[damageType.name] ?? 1) * factor;
+                        }
                     }
                 }
-                const weaknessArr = Array.from(weaknessSet);
+                const weaknessArr = Object.keys(multipliers).filter(type => multipliers[type] > 1);
+
                 // renderizar as pílulas com emblema circular + nome
-                weakWrap.innerHTML = weaknessArr.map(w => `<span class="type-pill weak" data-type="${w}"><span class="type-badge glyph" data-type="${w}"></span><span class="type-name">${capitalize(w)}</span></span>`).join(' ');
+                weakWrap.innerHTML = weaknessArr.map(w => `<span class="type-pill weak" data-type="${w}"><span class="type-badge glyph" data-type="${w}"></span><span class="type-name">${Interface.tipo(w)}</span><strong class="damage-multiplier">×${multipliers[w]}</strong></span>`).join(' ');
 
                 // inserir os ícones inline e colorí-los (emblema)
                 const weakIcons = weakWrap.querySelectorAll('.type-pill');
@@ -249,6 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     } catch (e) {}
                 }
             } catch (err) {
+                weakWrap.textContent = 'Não foi possível consultar as fraquezas.';
                 console.warn('weakness fetch failed', err);
             }
         }

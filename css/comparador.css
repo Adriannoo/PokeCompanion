@@ -436,3 +436,38 @@ body {
     transform: scale(1.05);
     background: #b10d0d;
 }
+/* Ajustes de largura para telas menores, preservando a identidade visual. */
+.main-content {
+    box-sizing: border-box;
+    width: min(1400px, calc(100% - 32px));
+    min-height: 0;
+}
+.search-bar { box-sizing: border-box; width: min(100%, 600px); margin-left: 0; }
+.search-input { min-width: 0; }
+.pokemon-card, .mini-panel { box-sizing: border-box; min-width: 0; }
+.pokemon-types { flex-wrap: wrap; justify-content: center; }
+.stat-bar-wrap { min-width: 0; }
+.footer { box-sizing: border-box; }
+.page-title { font-size: clamp(28px, 6vw, 96px); white-space: normal; }
+
+@media (max-width: 900px) {
+    .compare-container { flex-direction: column; gap: 24px; }
+    .pokemon-card { width: 100%; min-height: 0; }
+    .divider-vertical { display: none; }
+    .main-content { padding: 20px; border-radius: 24px; }
+}
+@media (max-width: 600px) {
+    .header { padding: 16px; }
+    .nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; max-width: 100%; }
+    .nav-item { height: auto; min-width: 0; gap: 6px; }
+    .nav-item span { font-size: 18px; }
+    .icon-1, .icon-2, .icon-3 { width: 32px; height: 32px; flex-shrink: 0; }
+    .login-btn { padding: 12px; border: 2px solid black; border-radius: 12px; max-width: 100%; overflow-wrap: anywhere; }
+    .search-bar { height: auto; padding: 12px; flex-direction: column; gap: 12px; }
+    .search-input, .add-btn { box-sizing: border-box; width: 100%; font-size: 16px; }
+    .pokemon-card { padding: 16px; }
+    .stat-row { gap: 8px; }
+    .stat-label { width: 72px; flex-shrink: 0; }
+    .footer { flex-direction: column; gap: 24px; padding: 24px; }
+    .footer-divider { display: none; }
+}

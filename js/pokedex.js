@@ -22,6 +22,8 @@ document.addEventListener("DOMContentLoaded", () => {
         console.warn("Busca desativada — input ou botão ausente.");
     }
 
+    const favoritesFilter = document.getElementById('favoritesFilter');
+
     // Estado
     let pokemons = [];
     let sortMode = "az"; // az, za, id-asc, id-desc
@@ -67,10 +69,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function formatPokemonData(data) {
         const animated =
-            data?.sprites?.versions["generation-v"]["black-white"]?.animated?.front_default;
+            data?.sprites?.versions?.["generation-v"]?.["black-white"]?.animated?.front_default;
 
         const animatedShiny =
-            data?.sprites?.versions["generation-v"]["black-white"]?.animated?.front_shiny;
+            data?.sprites?.versions?.["generation-v"]?.["black-white"]?.animated?.front_shiny;
 
         const image =
             animated ||
@@ -110,6 +112,15 @@ document.addEventListener("DOMContentLoaded", () => {
         list.forEach((p) => {
             const card = document.createElement("div");
             card.className = "pokemon-card";
+            card.tabIndex = 0;
+            card.setAttribute('role', 'link');
+            card.setAttribute('aria-label', `Ver detalhes de ${capitalize(p.name)}`);
+            card.addEventListener('keydown', event => {
+                if (event.target === card && (event.key === 'Enter' || event.key === ' ')) {
+                    event.preventDefault();
+                    window.location.href = `sobre-pokemon.html?id=${p.id}`;
+                }
+            });
 
         // imagem — img element com fallback
         const imgWrap = document.createElement("div");
@@ -127,6 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
         img.src = p.image || FALLBACK_IMG;
         img.alt = p.name || "Pokemon";
         img.onerror = () => {
+            img.onerror = null;
             img.src = FALLBACK_IMG;
         };
         imgWrap.appendChild(img);
@@ -149,18 +161,24 @@ document.addEventListener("DOMContentLoaded", () => {
                     const typeName = t;
                     const span = document.createElement('span');
                     span.className = `type-badge icon-only ${typeName}`;
+                    span.style.background = TYPE_SECOND_COLOR[typeName] || '#764ba2';
 
                     const img = document.createElement('img');
                     img.className = 'type-badge-img';
-                    img.alt = typeName + ' icon';
-                    img.src = `../assets/types/icones-tipos/${typeName}.svg`;
+                    img.alt = '';
+                    span.title = Interface.tipo(typeName);
+                    img.src = `../assets/types/tipos-desenho/${typeName}.svg`;
                     img.onerror = () => {
                         // usar texto como alternativa se o ícone não estiver disponível
                         img.remove();
-                        span.textContent = typeName;
+                        span.textContent = Interface.tipo(typeName);
                     };
 
                     span.appendChild(img);
+                    const label = document.createElement('span');
+                    label.className = 'type-label';
+                    label.textContent = Interface.tipo(typeName);
+                    span.appendChild(label);
                     typesWrap.appendChild(span);
                 });
         }
@@ -169,6 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
             info.appendChild(num);
             info.appendChild(typesWrap);
 
+            card.appendChild(Favoritos.criarBotao(p.id, p.name));
             card.appendChild(imgWrap);
             card.appendChild(info);
 
@@ -251,17 +270,20 @@ document.addEventListener("DOMContentLoaded", () => {
     // Handler: quando usuário clicar pesquisar
     async function onSearchClick() {
         if (!searchInput) return;
-
-        const q = searchInput.value.trim();
-        if (!q) {
-            sortPokemonsInMemory();
-            renderPokemons(pokemons);
-            return;
-        }
-
-        const single = await fetchPokemon(q);
+        const query = searchInput.value.trim();
+        if (!query) return loadInitial(currentTypeFilter);
+        const version = ++requestVersion;
+        isLoading = false;
+        currentTypeFilter = null;
+        updateFavoritesFilter();
+        document.querySelectorAll('.type-item.active').forEach(item => { item.classList.remove('active'); item.setAttribute('aria-pressed', 'false'); });
+        const button = document.querySelector('.load-more-btn');
+        if (button) button.hidden = true;
+        showStatus('Buscando Pokemon...');
+        const single = await fetchPokemon(query);
+        if (version !== requestVersion) return;
         pokemons = single ? [single] : [];
-        renderPokemons(pokemons);
+        applyTypeFilterAndRender();
     }
 
     function setupSortDropdown() {
@@ -289,82 +311,125 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    async function getTotalPokemonCount() {
-        try {
-            const res = await fetch(API_URL + "?limit=1");
-            const data = await res.json();
-            return data.count || 898;
-        } catch {
-            return 898;
-        }
+    // Cada consulta tem sua propria versao: respostas antigas nao alteram a tela.
+    let requestVersion = 0;
+    let isLoading = false;
+    let currentTypeFilter = null;
+    let entries = [];
+    let nextOffset = 0;
+    const catalogueCache = new Map();
+
+    function pokemonId(url) {
+        return Number(url.split('/').filter(Boolean).pop());
     }
 
-    let nextId = 1;
-    let totalCount = null;
+    async function getCatalogue(type = null) {
+        if (type === 'favorites') {
+            return Favoritos.ids().map(id => ({ url: `${API_URL}${id}/` }));
+        }
+        const key = type || 'all';
+        if (!catalogueCache.has(key)) {
+            const promise = (async () => {
+                if (!type) {
+                    const response = await fetch('https://pokeapi.co/api/v2/pokemon-species?limit=100000');
+                    if (!response.ok) throw new Error('Catalogo indisponivel');
+                    return (await response.json()).results;
+                }
+                const regular = await getCatalogue();
+                const regularIds = new Set(regular.map(item => pokemonId(item.url)));
+                const response = await fetch(`https://pokeapi.co/api/v2/type/${type}`);
+                if (!response.ok) throw new Error('Tipo indisponivel');
+                const data = await response.json();
+                return data.pokemon.map(item => item.pokemon)
+                    .filter(item => regularIds.has(pokemonId(item.url)));
+            })();
+            catalogueCache.set(key, promise);
+            promise.catch(() => catalogueCache.delete(key));
+        }
+        return catalogueCache.get(key);
+    }
 
-    async function loadInitial(n = 20) {
+    function showStatus(message) {
+        const text = document.createElement('p');
+        text.className = 'pokedex-status';
+        text.textContent = message;
+        pokemonGrid.replaceChildren(text);
+    }
+
+    async function loadInitial(type = null) {
+        const version = ++requestVersion;
+        currentTypeFilter = type;
+        updateFavoritesFilter();
+        isLoading = true;
         pokemons = [];
-        totalCount = await getTotalPokemonCount();
-        nextId = 1;
-        await loadNext(n);
+        entries = [];
+        nextOffset = 0;
+        const button = document.querySelector('.load-more-btn');
+        if (button) { button.hidden = false; button.disabled = true; button.textContent = 'Carregando...'; }
+        showStatus('Carregando Pokemon...');
+        try {
+            const catalogue = await getCatalogue(type);
+            if (version !== requestVersion) return;
+            entries = Array.from(new Map(catalogue.map(item => [pokemonId(item.url), item])).values());
+            isLoading = false;
+            if (entries.length === 0) {
+                showStatus(type === 'favorites' ? 'Você ainda não tem favoritos. Use ☆ nos cartões para salvar.' : 'Nenhum Pokémon encontrado.');
+                if (button) button.hidden = true;
+                return;
+            }
+            await loadNext(20);
+        } catch (error) {
+            if (version !== requestVersion) return;
+            isLoading = false;
+            showStatus('Nao foi possivel carregar. Tente pesquisar ou selecionar um tipo novamente.');
+            if (button) button.hidden = true;
+            console.warn('Falha no catalogo', error);
+        }
     }
 
     async function loadNext(n = 20) {
-        if (totalCount === null) totalCount = await getTotalPokemonCount();
-        if (nextId > totalCount) return;
-
-        const startId = nextId;
-        const endId = Math.min(totalCount, nextId + n - 1);
-        const ids = [];
-
-        for (let id = startId; id <= endId; id++) ids.push(id);
-
-        const batchSize = 8;
-        for (let start = 0; start < ids.length; start += batchSize) {
-            const end = Math.min(ids.length - 1, start + batchSize - 1);
-            const promises = [];
-
-            for (let i = start; i <= end; i++) {
-                promises.push(fetchPokemon(ids[i]));
+        if (isLoading || nextOffset >= entries.length) return;
+        isLoading = true;
+        const version = requestVersion;
+        const button = document.querySelector('.load-more-btn');
+        if (button) { button.disabled = true; button.textContent = 'Carregando...'; }
+        const endOffset = Math.min(nextOffset + n, entries.length);
+        try {
+            const loaded = [];
+            for (let start = nextOffset; start < endOffset; start += 8) {
+                const batch = entries.slice(start, Math.min(start + 8, endOffset));
+                const results = await Promise.all(batch.map(item => fetchPokemon(pokemonId(item.url))));
+                if (version !== requestVersion) return;
+                if (results.some(item => !item)) throw new Error('Falha ao carregar o lote');
+                loaded.push(...results);
             }
-
-            const results = await Promise.all(promises);
-            results.forEach((r) => r && pokemons.push(r));
+            if (version !== requestVersion) return;
+            // O ID identifica o Pokemon, mesmo ao alternar busca, tipo e paginacao.
+            pokemons = Array.from(new Map([...pokemons, ...loaded].map(item => [item.id, item])).values());
+            nextOffset = endOffset;
+            applyTypeFilterAndRender();
+        } catch (error) {
+            if (version === requestVersion) {
+                showStatus('Falha ao carregar Pokemon. Use Carregar mais para tentar novamente.');
+                console.warn('Falha no carregamento', error);
+            }
+        } finally {
+            if (version === requestVersion) {
+                isLoading = false;
+                if (button) {
+                    button.disabled = nextOffset >= entries.length;
+                    button.textContent = button.disabled ? 'Todos carregados' : 'Carregar mais';
+                }
+            }
         }
+    }
 
-        nextId = endId + 1;
-
+    function applyTypeFilterAndRender() {
         sortPokemonsInMemory();
-        applyTypeFilterAndRender();
-
-        const btn = document.querySelector(".load-more-btn");
-        if (btn) {
-            if (nextId > totalCount) {
-                btn.disabled = true;
-                btn.textContent = "Todos carregados";
-            } else {
-                btn.disabled = false;
-                btn.textContent = "Carregar mais";
-            }
-        }
+        renderPokemons(pokemons);
     }
 
     setupSortDropdown();
-
-    let currentTypeFilter = null;
-
-    function applyTypeFilterAndRender() {
-        let list = pokemons.slice();
-
-        if (currentTypeFilter) {
-            list = list.filter(
-                (p) => p.types && p.types.includes(currentTypeFilter)
-            );
-        }
-
-        sortPokemonsInMemory();
-        renderPokemons(list);
-    }
 
     function setupTypeFilter() {
         const items = document.querySelectorAll('.type-item');
@@ -416,11 +481,36 @@ document.addEventListener("DOMContentLoaded", () => {
                     it.classList.add("active");
                 }
 
-                applyTypeFilterAndRender();
+                if (searchInput) searchInput.value = '';
+                items.forEach(item => item.setAttribute('aria-pressed', String(item.classList.contains('active'))));
+                loadInitial(currentTypeFilter);
             });
         });
     }
 
+    function updateFavoritesFilter() {
+        if (!favoritesFilter) return;
+        favoritesFilter.textContent = `☆ Favoritos (${Favoritos.ids().length})`;
+        favoritesFilter.setAttribute('aria-pressed', String(currentTypeFilter === 'favorites'));
+    }
+
+    if (favoritesFilter) {
+        favoritesFilter.addEventListener('click', () => {
+            document.querySelectorAll('.type-item.active').forEach(item => { item.classList.remove('active'); item.setAttribute('aria-pressed', 'false'); });
+            if (searchInput) searchInput.value = '';
+            loadInitial(currentTypeFilter === 'favorites' ? null : 'favorites');
+        });
+    }
+    window.addEventListener('favoritoschange', () => {
+        updateFavoritesFilter();
+        if (currentTypeFilter === 'favorites') loadInitial('favorites');
+    });
+    const filtersToggle = document.getElementById('filtersToggle');
+    filtersToggle.addEventListener('click', () => {
+        const expanded = filtersToggle.getAttribute('aria-expanded') !== 'true';
+        filtersToggle.setAttribute('aria-expanded', String(expanded));
+        filtersToggle.textContent = expanded ? 'Recolher tipos ▴' : 'Mostrar tipos ▾';
+    });
     setupTypeFilter();
 
     if (searchBtn) {
@@ -433,7 +523,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    loadInitial(20);
+    loadInitial();
 
     const loadMoreBtn = document.querySelector(".load-more-btn");
     if (loadMoreBtn) {

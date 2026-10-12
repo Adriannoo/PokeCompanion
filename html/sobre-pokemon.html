@@ -8,8 +8,9 @@
     <link rel="stylesheet" href="../css/sobre-pokemon.css">
     <link rel="stylesheet" href="../css/styleguide.css">
     <link rel="icon" type="imagem/jpg" href="../assets/icone1.png">
+    <link rel="stylesheet" href="../css/layout.css?v=7">
 </head>
-<body>
+<body class="page-detail">
     <header class="header">
         <nav class="nav">
             <a class="nav-item" href="pagina-inicial.html">
@@ -17,11 +18,11 @@
                 <span>Página Inicial</span>
             </a>
             <a class="nav-item" href="pokedex.html">
-                <div class="nav icon-2"></div>
+                <div class="nav-icon icon-2"></div>
                 <span>Pokédex</span>
             </a>
             <a class="nav-item" href="comparador.html">
-                <div class="nav icon-3"></div>
+                <div class="nav-icon icon-3"></div>
                 <span>Comparar</span>
             </a>
             <a class="login-btn">Fazer login</a>
@@ -48,9 +49,9 @@
                 <div class="footer-links">
                     <h4>Links</h4>
                     <ul>
-                        <li>Pagina Inicial</li>
-                        <li>Pokédex</li>
-                        <li>Comparar</li>
+                        <li><a href="pagina-inicial.html">Pagina Inicial</a></li>
+                        <li><a href="pokedex.html">Pokédex</a></li>
+                        <li><a href="comparador.html">Comparar</a></li>
                     </ul>
                 </div>
             </div>
@@ -71,6 +72,8 @@
         </footer>
     </div>
 
+    <script src="../js/interface.js"></script>
+    <script src="../js/favoritos.js"></script>
     <script src="../js/sobre-pokemon.js"></script>
 </body>
 </html>
