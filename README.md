@@ -36,11 +36,11 @@ Projeto acadêmico em **HTML, CSS e JavaScript**, com dados da PokéAPI. As core
 
 ## Galeria
 
-Capturas reais da aplicação em execução, com dados demonstrativos.
+Capturas reais da aplicação em execução, com dados demonstrativos. Abra uma imagem para visualizar no tamanho original.
 
-| Explorar a Pokédex | Guardar favoritos |
-| :---: | :---: |
-| ![Pokédex com busca e filtros](docs/imagens/pokedex.jpg) | ![Favoritos por conta com Bulbasaur](docs/imagens/favoritos.jpg) |
+### Pokédex
+
+![Pokédex com busca, filtros e estrelas de favoritos](docs/imagens/pokedex.jpg)
 
 ### Comparação de tipos e estatísticas
 
