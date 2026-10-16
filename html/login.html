@@ -1,75 +1,127 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PokéCompanion</title>
-    <link rel="stylesheet" href="../css/login.css">
-    <link rel="stylesheet" href="../css/styleguide.css">
-    <link rel="icon" type="imagem/jpg" href="../assets/icone1.png">
-    <link rel="stylesheet" href="../css/layout.css?v=7">
-</head>
-<body class="page-login">
-    <!-- Header -->
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="Explore Pokémon, compare atributos e descubra evoluções no PokéCompanion."
+    />
+    <title>Sua conta · PokéCompanion</title>
+    <link rel="icon" href="../assets/pokeball-icon.svg" />
+    <link rel="stylesheet" href="../css/styleguide.css" />
+    <link rel="stylesheet" href="../css/layout.css" />
+    <link rel="stylesheet" href="../css/login.css" />
+    <link rel="stylesheet" href="../css/tema.css" />
+    <script src="../js/tema.js"></script>
+  </head>
+  <body class="page-login">
+    <a class="skip-link" href="#main">Pular para o conteúdo</a>
     <header class="header">
-        <nav class="nav">
-            <a class="nav-item" href="pagina-inicial.html">
-                <div class="nav-icon icon-1"></div>
-                <span>Página Inicial</span>
-            </a>
-            <a class="nav-item" href="pokedex.html">
-                <div class="nav-icon icon-2"></div>
-                <span>Pokédex</span>
-            </a>
-            <a class="nav-item" href="comparador.html">
-                <div class="nav-icon icon-3"></div>
-                <span>Comparar</span>
-            </a>
-            <a class="login-btn">Fazer login</a>
-            
-            <div class="user-menu" id="userMenu" style="display:none;">
-                <button id="logoutBtn">Sair</button>
-            </div>
-        </nav>
-    </header>
-    
-    <!-- Listras de Fundo -->
-    <div class="background-container">
-        <div class="stripe yellow-stripe"></div>
-        <div class="stripe blue-stripe"></div>
-        <div class="stripe red-stripe"></div>
-    </div>
-
-    <div class="login-box" id="loginBox">
-        <h2 id="authTitle">Login</h2>
-
-        <p class="auth-note">Seu espaço de treinador. Login demonstrativo neste navegador.</p>
-        <p id="feedback" class="feedback" role="status" hidden></p>
-        <form id="authForm">
-
-            <!-- Campo Email (somente no registro) -->
-            <div id="emailField" style="display:none;">
-                <label for="email">E-mail:</label>
-                <input type="email" id="email">
-            </div>
-
-            <label for="username">Usuário:</label>
-            <input type="text" id="username" required>
-
-            <label for="password">Senha:</label>
-            <input type="password" id="password" required>
-
-            <button type="submit" id="authBtn">Entrar</button>
-        </form>
-
-        <div class="switch-auth">
-            <span id="switchText">Não tem uma conta?</span>
-            <a href="#" id="switchLink">Registre-se</a>
+      <nav class="nav" aria-label="Navegação principal">
+        <a class="brand" href="pagina-inicial.html"
+          ><img src="../assets/pokeball-icon.svg" alt="" /><span
+            >Poké<span>Companion</span></span
+          ></a
+        >
+        <div class="nav-links">
+          <a class="nav-item" href="pagina-inicial.html"
+            ><img src="../assets/icone1.png" alt="" /><span
+              >Página Inicial</span
+            ></a
+          ><a class="nav-item" href="pokedex.html"
+            ><img src="../assets/icone2.png" alt="" /><span>Pokédex</span></a
+          ><a class="nav-item" href="comparador.html"
+            ><img src="../assets/icone3.png" alt="" /><span>Comparar</span></a
+          >
         </div>
-
-        
-    </div>
-    <script src="../js/interface.js"></script>
-    <script src="../js/login.js"></script>
-</body>
+        <div class="account">
+          <a class="login-btn button" href="login.html">Fazer login</a>
+          <div id="userMenu" class="user-menu" hidden>
+            <p>Conta local</p>
+            <button id="logoutBtn" class="button">Sair</button>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <div class="background-container" aria-hidden="true"></div>
+    <main id="main">
+      <div id="feedback" hidden tabindex="-1"></div>
+      <section class="auth-page content-width">
+        <div class="content-panel login-box">
+          <p class="eyebrow">Seu espaço no PokéCompanion</p>
+          <h1 id="authTitle">Fazer login</h1>
+          <p class="auth-intro">
+            Entre para guardar seus favoritos nesta conta.
+          </p>
+          <form id="authForm">
+            <label id="emailField" hidden
+              >E-mail<input
+                id="email"
+                type="email"
+                autocomplete="email"
+                maxlength="120" /></label
+            ><label
+              >Usuário<input
+                id="username"
+                autocomplete="username"
+                required
+                minlength="3"
+                maxlength="30"
+                pattern="[a-zA-Z0-9_-]+"
+                title="Use letras, números, hífen ou sublinhado." /></label
+            ><label
+              >Senha
+              <div class="password-field">
+                <input
+                  id="password"
+                  type="password"
+                  autocomplete="current-password"
+                  required
+                  minlength="6"
+                  maxlength="100"
+                /><button type="button" id="showPassword" aria-pressed="false">
+                  Mostrar
+                </button>
+              </div></label
+            ><button class="button" id="authBtn" type="submit">Entrar</button>
+          </form>
+          <p class="switch-auth">
+            <span id="switchText">Não tem uma conta?</span>
+            <button id="switchAuth" type="button">Criar conta</button>
+          </p>
+          <p class="local-notice">
+            Demonstração local: não há servidor de autenticação nem
+            sincronização entre dispositivos. Use uma senha de teste.
+          </p>
+        </div>
+      </section>
+    </main>
+    <footer class="footer">
+      <div>
+        <a class="footer-brand" href="pagina-inicial.html">PokéCompanion</a>
+        <p>Projeto acadêmico feito por fãs de Pokémon.</p>
+        <div class="footer-links">
+          <a href="pagina-inicial.html">Início</a
+          ><a href="pokedex.html">Pokédex</a
+          ><a href="comparador.html">Comparar</a>
+        </div>
+      </div>
+      <div>
+        <h2>Sobre o projeto</h2>
+        <p>
+          Desenvolvido para praticar interfaces web e consumo da PokéAPI.
+          Pokémon e seus personagens pertencem aos respectivos titulares.
+        </p>
+        <small
+          >Login, favoritos, equipe e pontuações são demonstrativos e locais a
+          este navegador.</small
+        >
+      </div>
+    </footer>
+    <script src="../js/dados.js" defer></script>
+    <script src="../js/interface.js" defer></script>
+    <script src="../js/favoritos.js" defer></script>
+    <script src="../js/login.js" defer></script>
+  </body>
 </html>

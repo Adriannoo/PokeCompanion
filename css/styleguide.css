@@ -1,34 +1,14 @@
-/* Fonte */
-@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Righteous&display=swap');
-
-/* ===================== */
-/*     PALETA DE COR     */
-/* ===================== */
+@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Righteous&display=swap");
 :root {
-    --amarelo-dourado: #FFDE00;
-    --azul-cerulean: #3B4CCA;
-    --vermelho-boston: #CC0000;
-    --cinza-padrao: #d9d9d9;
-    --branco-full: #ffffff;
-    --verde-campo: #81C784;
-}
-
-body {
-    font-family: 'Fredoka', 'Righteous', sans-serif;
-}
-
-.icon-1 { background: url(../assets/icone1.png) var(--cinza-padrao) 50% / cover no-repeat; }
-.icon-2 { background: url(../assets/icone2.png) var(--cinza-padrao) 50% / cover no-repeat; }
-.icon-3 { background: url(../assets/icone3.png) var(--cinza-padrao) 50% / cover no-repeat; }
-
-/* remove underline / cor de link no header */
-.nav-item,
-.nav-item:link,
-.nav-item:visited {
-    text-decoration: none;
-    color: inherit; /* evita que o navegador aplique cor de link */
-} 
-
-.nav-item span {
-    text-decoration: none;
+  --yellow: #ffde00;
+  --blue: #3b4cca;
+  --red: #cc0000;
+  --green: #81c784;
+  --paper: #f5f3eb;
+  --ink: #202330;
+  --muted: #59606d;
+  --heading: "Righteous", sans-serif;
+  --body: "Fredoka", sans-serif;
+  --radius: 22px;
+  --shadow: 0 8px 0 #12162422, 0 15px 35px #1113;
 }

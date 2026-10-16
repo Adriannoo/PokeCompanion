@@ -23,41 +23,50 @@ Projeto acadêmico em **HTML, CSS e JavaScript**, com dados da PokéAPI. As core
 
 ## Funcionalidades
 
-- **Página inicial:** apresenta um Pokémon aleatório a cada carregamento.
-- **Pokédex:** busca por nome ou número, filtros por tipo e carregamento em lotes de 20, sem cartões duplicados.
-- **Ordenação:** por nome ou número, aplicada aos Pokémon já carregados.
-- **Favoritos:** salvar e remover pela Pokédex, pelo comparador ou pelos detalhes; consultar a lista no botão Favoritos.
-- **Comparador:** até dois Pokémon lado a lado, com estatísticas, habilidades, altura, peso e fraquezas.
-- **Detalhes:** descrição, tipos e estatísticas de cada Pokémon.
-- **Fraquezas:** multiplicadores **×2 e ×4**, considerando a combinação dos tipos defensivos.
-- **Layout responsivo:** navegação, cartões e formulários adaptados a telas menores.
-- **Interface em português:** tipos e estatísticas traduzidos, filtros recolhíveis no celular e mensagens dentro da página.
-- **Login demonstrativo:** cadastro e sessão locais para praticar persistência no navegador.
+- **Tema claro e escuro:** seletor de sol/lua no cabeçalho, com preferência salva neste navegador e aplicada em todas as páginas.
+
+- **Página inicial:** esteira circular em perspectiva com sete Pokémon, controles de navegação e pausa; iniciais de nove regiões, atalhos por tipo e vistos recentemente.
+- **Pokédex:** sugestões por nome ou número a partir do catálogo completo, filtros por tipo, favoritos e lotes de 20 sem cartões duplicados.
+- **Ordenação:** por nome ou número, aplicada ao catálogo filtrado antes da paginação.
+- **Favoritos por conta:** estrela na Pokédex, no comparador e na ficha; exige login demonstrativo. Favoritos antigos sem autoria podem ser importados explicitamente.
+- **Comparador:** dois Pokémon lado a lado, diferenças entre atributos, habilidades, relações de tipos, troca de lados e compartilhamento por URL.
+- **Ficha:** cenário visual por tipo, sombra, opção normal/shiny quando disponível e abas de informações, atributos, evoluções e golpes.
+- **Equipe:** até seis Pokémon, resumo dos tipos e fraquezas compartilhadas; dados salvos localmente.
+- **Quiz:** identificação pela silhueta, quatro alternativas, pontuação e histórico consolidado de acertos no navegador.
+- **Interface:** títulos e botões temáticos, ícones vetoriais, pesquisa por teclado, filtros recolhíveis e fundo desfocado nas páginas internas.
+- **Movimento:** a esteira pausa durante interação, foco, aba oculta ou saída da área visível; animações respeitam a preferência por movimento reduzido.
+- **Falhas:** mensagens de erro, nova tentativa e tratamento de imagens ausentes e armazenamento indisponível.
 
 ## Galeria
 
-Capturas reais da aplicação em execução, com o visual atual.
+Capturas reais da aplicação em execução, com dados demonstrativos.
 
 | Explorar a Pokédex | Guardar favoritos |
 | :---: | :---: |
-| ![Pokédex com busca e filtros](docs/imagens/pokedex.jpg) | ![Favoritos com Bulbasaur e Charizard](docs/imagens/favoritos.jpg) |
+| ![Pokédex com busca e filtros](docs/imagens/pokedex.jpg) | ![Favoritos por conta com Bulbasaur](docs/imagens/favoritos.jpg) |
 
 ### Comparação de tipos e estatísticas
 
-Charizard recebe dano de Pedra **×4**, Água **×2** e Elétrico **×2**. Swampert recebe dano de Planta **×4**.
+Charizard recebe dano de Pedra **×4**, Água **×2** e Elétrico **×2**. Blastoise recebe dano de Planta **×2** e Elétrico **×2**.
 
-![Comparador com Charizard e Swampert](docs/imagens/comparador.jpg)
+![Comparador com Charizard e Blastoise](docs/imagens/comparador.jpg)
 
 <details>
 <summary>Ver detalhes, login e versão móvel</summary>
 
-![Detalhes de Charizard](docs/imagens/detalhes.jpg)
+![Detalhes de Blastoise](docs/imagens/detalhes.jpg)
 
 ![Login demonstrativo](docs/imagens/login.jpg)
 
 <p align="center"><img src="docs/imagens/mobile.jpg" alt="Pokédex em tela móvel de 390 pixels com filtros recolhidos" width="300"></p>
 
 </details>
+
+### Equipe e quiz
+
+![Equipe com seis Pokémon e resumo dos tipos](docs/imagens/equipe.jpg)
+
+![Quiz de identificação pela silhueta](docs/imagens/quiz.jpg)
 
 ## Executar localmente
 
@@ -78,20 +87,32 @@ Também é possível usar o Live Server do VS Code e abrir `html/pagina-inicial.
 
 ## Tecnologias e organização
 
-**HTML5 · CSS3 · JavaScript · Fetch API · DOM · localStorage · sessionStorage**
+**HTML5 · CSS3 · JavaScript · Fetch API · DOM · localStorage · sessionStorage · Web Crypto**
 
 ```text
 PokeCompanion/
 ├── assets/             # Imagens e ícones de tipos
 ├── css/                # Estilos de cada página e layout compartilhado
 ├── html/               # Página inicial, Pokédex, comparador, detalhes e login
-├── js/                 # Consultas à API, interface e favoritos compartilhados
+├── js/                 # Dados, componentes, sessão, favoritos e lógica das telas
+├── tests/              # Testes de dados, cache, sessão e favoritos
+├── index.html          # Entrada para a página inicial
 ├── docs/imagens/       # Capturas reais da aplicação
 ├── LICENSE
 └── README.md
 ```
 
-`css/layout.css` reúne os ajustes comuns de navegação, fundo e responsividade. `js/favoritos.js` compartilha a persistência dos favoritos entre as três telas, armazenando apenas os IDs. `js/interface.js` centraliza os nomes em português e as mensagens dos formulários.
+`css/styleguide.css` define fontes e cores, `css/layout.css` concentra os componentes comuns e os demais CSS tratam cada tela. `js/dados.js` reúne consultas, cache, cores, traduções de apoio e relações de tipos. `js/interface.js` contém busca com sugestões, ícones, mensagens, leitura da sessão e alinhamento dos sprites. `js/favoritos.js` isola os IDs por conta; `js/atividades.js` trata equipe e quiz.
+
+### Testes
+
+Com Node.js instalado, execute:
+
+```bash
+node --test tests/dados-sessao.test.cjs
+```
+
+Os testes usam dados controlados, sem rede ou acesso ao armazenamento de um navegador. Cobrem favoritos sem login, isolamento entre contas, compatibilidade da lista antiga, sessão inválida, armazenamento bloqueado, retorno de login, cache, nova tentativa, números com zeros à esquerda, traduções e multiplicadores de dano.
 
 ## Aprendizados
 
@@ -104,26 +125,27 @@ PokeCompanion/
 
 ## Como os dados funcionam
 
-Os dados dos Pokémon vêm da [PokéAPI](https://pokeapi.co/docs/v2/). Os favoritos ficam no navegador e não exigem login. Não existe sincronização entre dispositivos.
+Os dados vêm da [PokéAPI](https://pokeapi.co/docs/v2/). Consultas concluídas são reaproveitadas em memória e em `sessionStorage`, por até um dia. Sugestões usam o índice de espécies; dados adicionais são consultados quando necessários.
 
-O armazenamento local depende do endereço utilizado: trocar o domínio ou a porta cria outro espaço de dados. Limpar os dados do site remove os favoritos, a comparação salva e o cadastro demonstrativo.
+Favoritos exigem a sessão local e são separados por nome de usuário. A lista global anterior não tem autoria e não é vinculada automaticamente a uma conta: a Pokédex oferece a importação explícita. Equipe, quiz e comparação permanecem recursos locais do navegador.
 
-As fraquezas consideram apenas os tipos, incluindo resistências e imunidades ao combinar dois tipos. Não simulam habilidades, golpes, nível, clima ou dano completo de uma batalha. Descrições e nomes de habilidades retornados pela API podem permanecer em inglês.
+O armazenamento depende do endereço e da porta. Limpar os dados do site remove as contas e as preferências; não há sincronização entre dispositivos. Senhas novas usam PBKDF2 no navegador; cadastros antigos são aceitos e atualizados ao entrar. Isso continua sendo um protótipo local, sem autenticação ou autorização de servidor. Use dados e senhas de teste. Novos cadastros exigem localhost ou HTTPS para a Web Crypto.
 
-O login é um exercício acadêmico com dados e senhas em `localStorage`. Não é uma autenticação adequada para contas reais.
+Fraquezas, resistências e imunidades combinam os tipos defensivos. A equipe e o comparador não simulam uma batalha completa: não calculam habilidades, itens, nível, clima ou escolha de golpes.
 
-## Validação manual
+O projeto prioriza nomes e textos em português da API, com traduções locais de apoio para habilidades e golpes comuns. Quando faltar tradução, o nome original é identificado. Resumos locais de Pokémon não são descrições oficiais traduzidas. A lista de golpes abrange diferentes jogos, carrega em lotes e informa quantos registros estão disponíveis na busca atual.
 
-- Salvar, remover e recuperar favoritos após recarregar a página.
-- Lista vazia e contador de favoritos atualizados.
-- Botões de favoritos na Pokédex, nos detalhes e no comparador.
-- Fraquezas de Charizard e Swampert com multiplicadores corretos.
-- Filtros móveis recolhíveis e abertura de cartões com Enter.
-- Mensagens para busca vazia, Pokémon inválido, repetição e limite de comparação.
-- Mensagem de usuário inexistente e troca entre login e cadastro.
-- Cinco páginas verificadas em larguras de 320, 390, 768 e 1280 pixels.
+## Conferência
 
-As capturas acima foram feitas no navegador com a aplicação em execução.
+- Navegação da esteira, pausa, sprites alinhados e mudança de região.
+- Pesquisa com sugestões, navegação por setas/Enter e busca além do lote carregado.
+- Visitante impedido de favoritar; cadastro, login e retorno à página de origem.
+- Favoritos isolados por conta e recuperação de estados vazios.
+- Comparação, troca de lados, link compartilhável e relações entre tipos.
+- Ficha de Blastoise, evoluções de Squirtle, golpes e opção shiny.
+- Equipe de seis membros, limite de tamanho e resumo dos tipos.
+- Quiz com revelação da silhueta e bloqueio de respostas repetidas.
+- Testes automatizados de dados e sessão e conferência de responsividade.
 
 ## Desenvolvimento
 

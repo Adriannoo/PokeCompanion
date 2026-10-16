@@ -1,299 +1,250 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const detailWrap = document.getElementById('pokemon-detail');
-    const API = 'https://pokeapi.co/api/v2';
-
-    function getQueryParam(name) {
-        const params = new URLSearchParams(window.location.search);
-        return params.get(name);
+document.addEventListener("DOMContentLoaded", () => {
+  const holder = document.querySelector("#pokemon-detail"),
+    id = new URLSearchParams(location.search).get("id") || "9";
+  let active = null,
+    shiny = false;
+  async function start() {
+    Interface.loading(holder);
+    try {
+      const p = await Poke.pokemon(id);
+      active = p;
+      Poke.remember(p);
+      document.title = Poke.name(p.name) + " · PokéCompanion";
+      holder.innerHTML = `<article class="detail-card" style="${Poke.tone(p)}"><div class="back-row"><a class="button button-secondary" href="pokedex.html">${Icons("left")} Voltar</a></div><div class="detail-stage"><div class="detail-art" data-type="${p.types[0].type.name}"><div class="sprite-frame"><img class="sprite-normalized" crossorigin="anonymous" src="${Poke.sprite(p)}" alt="${Poke.name(p.name)}" id="detailSprite"></div></div><div class="detail-header"><p class="eyebrow">Conheça este Pokémon</p><h1>${Poke.name(p.name)}</h1><p class="pokemon-number">${Poke.number(p.id)}</p><div class="pokemon-types">${Poke.badges(p)}</div><div class="detail-measures"><div><strong>${(p.height / 10).toLocaleString("pt-BR")} m</strong><span>Altura</span></div><div><strong>${(p.weight / 10).toLocaleString("pt-BR")} kg</strong><span>Peso</span></div></div><button class="button button-secondary shiny-toggle" id="shinyToggle" aria-pressed="false">${Icons("spark")} Ver shiny</button></div></div><div class="detail-tabs" role="tablist" aria-label="Informações do Pokémon">${[
+        ["about", "Sobre"],
+        ["stats", "Atributos"],
+        ["evolution", "Evoluções"],
+        ["moves", "Golpes"],
+      ]
+        .map(
+          ([key, label], i) =>
+            `<button class="button" role="tab" id="tab-${key}" aria-controls="panel-${key}" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}" data-tab="${key}">${label}</button>`,
+        )
+        .join("")}</div>${[
+        ["about", "Sobre"],
+        ["stats", "Atributos"],
+        ["evolution", "Evoluções"],
+        ["moves", "Golpes"],
+      ]
+        .map(
+          ([key, label], i) =>
+            `<section class="detail-panel" id="panel-${key}" role="tabpanel" aria-labelledby="tab-${key}" ${i ? "hidden" : ""}><h2>${label}</h2><div class="panel-body"></div></section>`,
+        )
+        .join(
+          "",
+        )}<nav class="detail-nav" aria-label="Próximo Pokémon">${p.id > 1 ? `<a href="sobre-pokemon.html?id=${p.id - 1}">← ${Poke.number(p.id - 1)}</a>` : "<span></span>"}<a href="pokedex.html">Voltar à Pokédex</a><a id="nextPokemon" href="sobre-pokemon.html?id=${p.id + 1}">${Poke.number(p.id + 1)} →</a></nav></article>`;
+      holder
+        .querySelector(".back-row")
+        .append(Favoritos.criarBotao(p.id, p.name));
+      const image = document.querySelector("#detailSprite");
+      if (image.complete) SpriteLayout.fit(image);
+      const shinyButton = document.querySelector("#shinyToggle");
+      const bw = p.sprites?.versions?.["generation-v"]?.["black-white"];
+      if (!(
+        bw?.animated?.front_shiny ||
+        bw?.front_shiny ||
+        p.sprites?.front_shiny ||
+        p.sprites?.other?.["official-artwork"]?.front_shiny
+      ))
+        shinyButton.hidden = true;
+      shinyButton.onclick = () => {
+        shiny = !shiny;
+        delete image.dataset.fallback;
+        image.src = Poke.sprite(p, shiny);
+        shinyButton.setAttribute("aria-pressed", String(shiny));
+        shinyButton.innerHTML =
+          Icons("spark") + (shiny ? " Ver normal" : " Ver shiny");
+      };
+      document.querySelector("#panel-stats .panel-body").innerHTML =
+        Poke.statRows(p) +
+        `<div class="stat-total"><span>Total dos atributos base</span><strong>${p.stats.reduce((s, v) => s + v.base_stat, 0)}</strong></div><p class="translation-note">Escala das barras: 0–255. Estes são atributos base, não valores de uma batalha.</p>`;
+      const loaded = new Set(["stats"]);
+      function select(key) {
+        holder.querySelectorAll("[role=tab]").forEach((button) => {
+          const current = button.dataset.tab === key;
+          button.setAttribute("aria-selected", String(current));
+          button.tabIndex = current ? 0 : -1;
+          document.querySelector("#panel-" + button.dataset.tab).hidden =
+            !current;
+        });
+        if (!loaded.has(key)) {
+          loaded.add(key);
+          ({ about: loadAbout, evolution: loadEvolution, moves: loadMoves })[
+            key
+          ]();
+        }
+      }
+      holder.querySelectorAll("[role=tab]").forEach((button, i, list) => {
+        button.onclick = () => select(button.dataset.tab);
+        button.onkeydown = (e) => {
+          let next = i;
+          if (e.key === "ArrowRight") next = (i + 1) % list.length;
+          else if (e.key === "ArrowLeft")
+            next = (i - 1 + list.length) % list.length;
+          else if (e.key === "Home") next = 0;
+          else if (e.key === "End") next = list.length - 1;
+          else return;
+          e.preventDefault();
+          list[next].focus();
+          select(list[next].dataset.tab);
+        };
+      });
+      select("about");
+      Poke.catalog()
+        .then((list) => {
+          if (!list.some((v) => v.id === p.id + 1))
+            document.querySelector("#nextPokemon").hidden = true;
+        })
+        .catch(() => {});
+    } catch (error) {
+      Interface.error(holder, error, start);
     }
-
-    function capitalize(s) {
-        if (!s) return '';
-        return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+  async function loadAbout() {
+    const node = document.querySelector("#panel-about .panel-body");
+    Interface.loading(node);
+    try {
+      const [species, abilities, damage] = await Promise.all([
+        Poke.get("pokemon-species/" + Poke.idFrom(active.species.url)),
+        Poke.abilities(active),
+        Poke.damage(active),
+      ]);
+      const pt = species.flavor_text_entries?.find(
+        (e) => e.language.name === "pt-br" || e.language.name === "pt",
+      );
+      const summary =
+        pt?.flavor_text ||
+        Poke.summaries[active.id] ||
+        `${Poke.name(active.name)} é um Pokémon ${active.types.length > 1 ? "dos tipos" : "do tipo"} ${active.types.map((t) => Poke.types[t.type.name]).join(" e ")}. Mede ${(active.height / 10).toLocaleString("pt-BR")} m e pesa ${(active.weight / 10).toLocaleString("pt-BR")} kg.`;
+      const generation = {
+        "generation-i": "Kanto · 1ª geração",
+        "generation-ii": "Johto · 2ª geração",
+        "generation-iii": "Hoenn · 3ª geração",
+        "generation-iv": "Sinnoh · 4ª geração",
+        "generation-v": "Unova · 5ª geração",
+        "generation-vi": "Kalos · 6ª geração",
+        "generation-vii": "Alola · 7ª geração",
+        "generation-viii": "8ª geração",
+        "generation-ix": "Paldea · 9ª geração",
+      };
+      node.innerHTML = `<div class="detail-about-grid"><div><p>${Poke.escape(summary.replace(/[\n\f]/g, " "))}</p>${!pt ? '<p class="translation-note">Resumo em português elaborado a partir dos dados do Pokémon; não é uma descrição oficial traduzida.</p>' : ""}<h3>Origem</h3><p>${generation[species.generation?.name] || "Informação indisponível"}</p><h3>Habilidades</h3><div class="abilities-list">${abilities.map((a) => `<div><strong>${Poke.escape(a.name)}</strong>${!a.translated ? "<small>Nome original</small>" : ""}${a.hidden ? "<small>Habilidade oculta</small>" : ""}<p>${Poke.escape(a.description || "Descrição em português ainda não disponível.")}</p></div>`).join("")}</div></div><div><h3>Fraquezas</h3><div class="pokemon-types">${Poke.damageBadges(damage, (v) => v > 1)}</div><h3>Resistências</h3><div class="pokemon-types">${Poke.damageBadges(damage, (v) => v > 0 && v < 1)}</div><h3>Imunidades</h3><div class="pokemon-types">${Poke.damageBadges(damage, (v) => v === 0)}</div><p class="translation-note">Dano recebido considerando a combinação de tipos, sem habilidades.</p></div></div>`;
+    } catch (error) {
+      Interface.error(node, error, loadAbout);
     }
-
-    async function fetchJson(url) {
-        try {
-            const res = await fetch(url);
-            if (!res.ok) throw new Error('fetch status ' + res.status);
-            return await res.json();
-        } catch (err) {
-            console.error('fetchJson error', err);
-            return null;
-        }
+  }
+  async function loadEvolution() {
+    const node = document.querySelector("#panel-evolution .panel-body");
+    Interface.loading(node);
+    try {
+      const species = await Poke.get(
+          "pokemon-species/" + Poke.idFrom(active.species.url),
+        ),
+        data = await Poke.get(species.evolution_chain.url),
+        nodes = [];
+      function walk(item, depth = 0) {
+        nodes.push({
+          id: Poke.idFrom(item.species.url),
+          depth,
+          details: item.evolution_details,
+        });
+        item.evolves_to.forEach((child) => walk(child, depth + 1));
+      }
+      walk(data.chain);
+      const list = await Promise.all(
+        nodes.map((item) => Poke.pokemon(item.id)),
+      );
+      node.innerHTML =
+        '<p class="translation-note">Ramos diferentes podem apresentar evoluções alternativas; a numeração indica a etapa.</p><div class="evolution-grid">' +
+        list
+          .map((p, i) => {
+            const requirements = nodes[i].details
+              .map((d) => {
+                const info = [];
+                if (d.min_level) info.push("Nível " + d.min_level);
+                if (d.item) info.push("Item específico");
+                if (d.min_happiness) info.push("Amizade");
+                if (d.trigger.name === "trade") info.push("Troca");
+                if (d.time_of_day)
+                  info.push(
+                    d.time_of_day === "day"
+                      ? "Durante o dia"
+                      : "Durante a noite",
+                  );
+                return info.join(" · ") || "Condição específica";
+              })
+              .join(" ou ");
+            return `<a class="evolution-item ${p.id === active.id ? "current" : ""}" href="sobre-pokemon.html?id=${p.id}"><small>Etapa ${nodes[i].depth + 1}</small><img src="${Poke.sprite(p)}" alt="${Poke.name(p.name)}"><p>${Poke.number(p.id)}</p><h3>${Poke.name(p.name)}</h3><small>${Poke.escape(requirements || "Forma inicial")}</small></a>`;
+          })
+          .join("") +
+        "</div>";
+    } catch (error) {
+      Interface.error(node, error, loadEvolution);
     }
-
-    async function loadPokemon(idOrName) {
-        detailWrap.innerHTML = '<p style="color:white; text-align:center;">Carregando...</p>';
-        const p = await fetchJson(`${API}/pokemon/${encodeURIComponent(idOrName)}`);
-        if (!p) {
-            detailWrap.innerHTML = '<p style="color:white; text-align:center;">Não foi possível carregar o Pokémon.</p>';
-            return;
-        }
-
-        // tenta pegar flavor text em pt-BR via species e categoria (genera)
-        let flavor = '';
-        let category = '';
-        const species = await fetchJson(`${API}/pokemon-species/${p.id}`);
-        if (species) {
-            if (Array.isArray(species.flavor_text_entries)) {
-                // Preferir o texto descritivo em português (qualquer variante ‘pt’), usar o inglês como alternativa (fallback)
-                let entry = species.flavor_text_entries.find(e => e.language && typeof e.language.name === 'string' && e.language.name.toLowerCase().startsWith('pt'));
-                if (!entry) entry = species.flavor_text_entries.find(e => e.language && e.language.name === 'en');
-                if (entry) flavor = entry.flavor_text.replace(/\n|\f/g, ' ');
-            }
-            if (Array.isArray(species.genera)) {
-                let g = species.genera.find(g => g.language && typeof g.language.name === 'string' && g.language.name.toLowerCase().startsWith('pt'));
-                if (!g) g = species.genera.find(g => g.language && g.language.name === 'en');
-                if (g) category = g.genus;
-            }
-        }
-
-        // imagem preferida: prioriza sprites animados da geração V (black-white) quando disponíveis
-        // escolhe também o tipo principal baseado no slot=1 (para mapear a cor corretamente)
-        const primaryTypeObj = Array.isArray(p.types) ? p.types.find(t => t.slot === 1) : null;
-        const primaryTypeName = primaryTypeObj ? primaryTypeObj.type.name : (Array.isArray(p.types) && p.types.length ? p.types[0].type.name : null);
-
-        // escolher imagem: preferir o gif animado da generation-v (para manter a animação),
-        // usar como alternativa (fallback) a official-artwork (geralmente PNG transparente),
-        // e depois front_default.
-        let image = '';
-        try {
-            const gv = p.sprites && p.sprites.versions && p.sprites.versions['generation-v'] && p.sprites.versions['generation-v']['black-white'] && p.sprites.versions['generation-v']['black-white'].animated;
-            const official = p.sprites && p.sprites.other && p.sprites.other['official-artwork'] && p.sprites.other['official-artwork'].front_default;
-            if (gv && gv.front_default) image = gv.front_default;
-            else if (official) image = official;
-            else if (p.sprites && p.sprites.front_default) image = p.sprites.front_default;
-            else image = '';
-        } catch (e) {
-            image = p.sprites && p.sprites.front_default ? p.sprites.front_default : '';
-        }
-
-        // debug: expor no console a imagem escolhida e as fontes de sprites disponíveis para ajudar na solução de problemas
-        try {
-            console.debug('sobre-pokemon: chosen image for', p.name, image);
-            const available = {
-                official: p.sprites && p.sprites.other && p.sprites.other['official-artwork'] && p.sprites.other['official-artwork'].front_default,
-                animated_gv: p.sprites && p.sprites.versions && p.sprites.versions['generation-v'] && p.sprites.versions['generation-v']['black-white'] && p.sprites.versions['generation-v']['black-white'].animated && p.sprites.versions['generation-v']['black-white'].animated.front_default,
-                front: p.sprites && p.sprites.front_default
+  }
+  async function loadMoves() {
+    const node = document.querySelector("#panel-moves .panel-body");
+    node.innerHTML =
+      '<div class="move-controls"><input id="moveSearch" placeholder="Filtrar pelo nome do golpe" aria-label="Filtrar golpes por nome"></div><div class="moves-table-wrap"><table class="moves-table"><caption>Golpes registrados na API entre diferentes versões dos jogos. A disponibilidade varia por jogo. “—” indica valor não definido. Nomes em português podem incluir traduções locais de apoio.</caption><thead><tr><th>Golpe</th><th>Tipo</th><th>Categoria</th><th>Potência</th><th>Precisão</th></tr></thead><tbody id="movesBody"></tbody></table></div><p id="movesStatus" class="translation-note" role="status"></p><button class="button moves-load" id="loadMoves">Carregar mais golpes</button>';
+    const all = active.moves.map((m) => m.move),
+      body = document.querySelector("#movesBody"),
+      button = document.querySelector("#loadMoves"),
+      search = document.querySelector("#moveSearch");
+    let offset = 0,
+      busy = false,
+      entries = [];
+    function display() {
+      const query = search.value
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+      const filtered = entries.filter((e) =>
+        (e.name + " " + e.data.name)
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .includes(query),
+      );
+      body.innerHTML =
+        filtered
+          .map(
+            (e) =>
+              `<tr><td>${Poke.escape(e.name)}${!e.translated ? '<small class="translation-note"> · nome original</small>' : ""}</td><td>${Poke.types[e.data.type.name] || e.data.type.name}</td><td>${{ physical: "Físico", special: "Especial", status: "Status" }[e.data.damage_class.name] || "—"}</td><td>${e.data.power ?? "—"}</td><td>${e.data.accuracy == null ? "—" : e.data.accuracy + "%"}</td></tr>`,
+          )
+          .join("") ||
+        '<tr><td colspan="5">Nenhum golpe nesta seleção. Carregue mais para ampliar a consulta.</td></tr>';
+      document.querySelector("#movesStatus").textContent =
+        `${entries.length} de ${all.length} golpes carregados; a busca filtra esta lista.`;
+    }
+    async function load() {
+      if (busy) return;
+      busy = true;
+      button.disabled = true;
+      button.textContent = "Carregando…";
+      try {
+        const batch = await Promise.all(
+          all.slice(offset, offset + 12).map(async (m) => {
+            const item = await Poke.localized(m.url, Poke.moveNames[m.name]);
+            return {
+              ...item,
+              translated: item.translated || Boolean(Poke.moveNames[m.name]),
             };
-            console.debug('sobre-pokemon: available sprites', available);
-        } catch (e) {}
-
-        // Status
-        const stats = (p.stats || []).map(s => ({name: s.stat.name, value: s.base_stat}));
-
-        // tipos (array) e nome do tipo primário (ciente do slot)
-        const types = (p.types || []).map(t => t.type.name);
-        const primary = primaryTypeName || (types.length ? types[0] : null);
-
-        // monta HTML simples e reutilizável
-        const html = `
-            <div class="detail-card">
-                <div class="back-row">
-                    <button id="backBtn" class="back-btn">◀ Voltar</button>
-                </div>
-                <div class="detail-stage">
-                    <div class="detail-left">
-                        <div class="detail-image">
-                            <img src="${image}" alt="${capitalize(p.name)}" class="sprite-image">
-                        </div>
-
-                        <div class="stats-panel bottom-stats">
-                            <h3>Estatísticas</h3>
-                            <ul class="stats-list">
-                                ${stats.map(s => {
-                                    const pct = Math.min(100, Math.round((s.value / 180) * 100));
-                                    return `<li class="stat-row"><span class="stat-label">${Interface.stat(s.name)}</span><span class="stat-bar-wrap"><span class="stat-bar"><span class="stat-fill" data-pct="${pct}" style="width:0%"></span></span></span><span class="stat-value">${s.value}</span></li>`
-                                }).join('')}
-                            </ul>
-                            <div class="stat-total"><div class="total-label">Total:</div><div class="total-value">${stats.reduce((a,b)=>a+b.value,0)}</div></div>
-                        </div>
-                    </div>
-                    <div class="detail-right">
-                        <div class="right-top">
-                            <div class="detail-header">
-                                <h1>${capitalize(p.name)}</h1>
-                                <p class="pokemon-number">#${String(p.id).padStart(4, '0')}</p>
-                                <div class="pokemon-types">
-                                    ${types.map(t => `<span class="type-pill" data-type="${t}"><span class="type-icon" data-type="${t}"></span><span class="type-name">${Interface.tipo(t)}</span></span>`).join(' ')}
-                                </div>
-                            </div>
-                            <div class="meta-card">
-                                <p class="meta-category"><strong>${category || ''}</strong></p>
-                                <p>Altura ${p.height/10} m</p>
-                                <p>Peso ${p.weight/10} kg</p>
-                                <p class="meta-abilities">Habilidades: ${(p.abilities||[]).map(a=>a.ability.name).join(', ')}</p>
-                            </div>
-                        </div>
-
-                        <div class="right-grid">
-                            <div class="side-panels">
-                                <div class="meta-panel about-panel">
-                                    <h3>Sobre</h3>
-                                    <p class="flavor">${flavor}</p>
-                                </div>
-                                <div class="weaknesses">
-                                    <h3>Fraquezas</h3><p class="damage-note">Dano recebido pelos tipos, sem habilidades.</p>
-                                    <div class="weak-list"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        detailWrap.innerHTML = html;
-        detailWrap.querySelector('.back-row').appendChild(Favoritos.criarBotao(p.id, p.name));
-
-        // definir a cor primária do card com base no tipo primário (considerando slot=1)
-        try {
-            const cardNode = detailWrap.querySelector('.detail-card');
-            const TYPE_SECOND_COLOR = { water: '#6cbde4', ice: '#8cddd4', rock: '#d7cd90', steel: '#58a6aa', normal: '#a3a49e', poison: '#c261d4', psychic: '#fe9f92', fighting: '#e74347', fire: '#fbae46', flying: '#a6c2f2', ghost: '#7773d4', grass: '#5ac178', electric: '#fbe273', fairy: '#f3a7e7', dark: '#6e7587', dragon: '#0180c7', bug: '#afc836', ground: '#d29463' };
-            const color = primary && TYPE_SECOND_COLOR[primary] ? TYPE_SECOND_COLOR[primary] : '#764ba2';
-            // calcular um tom mais escuro (~50%) para o fundo, para que o painel pareça mais profundo
-            function hexToRgb(h) {
-                const hex = h.replace('#','');
-                const bigint = parseInt(hex.length === 3 ? hex.split('').map(c=>c+c).join('') : hex, 16);
-                const r = (bigint >> 16) & 255;
-                const g = (bigint >> 8) & 255;
-                const b = bigint & 255;
-                return {r,g,b};
-            }
-            function rgbToHex(r,g,b) {
-                const toHex = (n) => n.toString(16).padStart(2,'0');
-                return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-            }
-            function darkenHex(hex, factor) {
-                try {
-                    const {r,g,b} = hexToRgb(hex);
-                    const nr = Math.max(0, Math.round(r * (1 - factor)));
-                    const ng = Math.max(0, Math.round(g * (1 - factor)));
-                    const nb = Math.max(0, Math.round(b * (1 - factor)));
-                    return rgbToHex(nr,ng,nb);
-                } catch (e) { return hex }
-            }
-
-            const darker = darkenHex(color, 0.5); // 50% mais escuro
-            if (cardNode) {
-                // armazenar também a cor base caso queiramos usar a cor original em outro lugar
-                cardNode.style.setProperty('--card-primary-base', color);
-                cardNode.style.setProperty('--card-primary-color', darker);
-            }
-            // também definir um atributo data para estilização, se necessário
-            if (cardNode && primary) cardNode.setAttribute('data-primary-type', primary);
-        } catch (e) {}
-
-        // inserir inline os SVGs de glifo para os tipos no cabeçalho e para as fraquezas
-        async function inlineTypeIcons() {
-            const headerIcons = detailWrap.querySelectorAll('.type-pill .type-icon');
-            for (const el of headerIcons) {
-                const t = el.getAttribute('data-type');
-                const url = `../assets/types/tipos-desenho/${t}.svg`;
-                try {
-                    const res = await fetch(url);
-                    if (!res.ok) throw new Error('not ok ' + res.status);
-                    const svgText = await res.text();
-                    el.innerHTML = svgText;
-                    el.classList.add('has-svg');
-                } catch (err) {
-                    el.textContent = '';
-                }
-                // colorir a ‘pílula’ com base no tipo
-                try {
-                    const TYPE_SECOND_COLOR = { water: '#6cbde4', ice: '#8cddd4', rock: '#d7cd90', steel: '#58a6aa', normal: '#a3a49e', poison: '#c261d4', psychic: '#fe9f92', fighting: '#e74347', fire: '#fbae46', flying: '#a6c2f2', ghost: '#7773d4', grass: '#5ac178', electric: '#fbe273', fairy: '#f3a7e7', dark: '#6e7587', dragon: '#0180c7', bug: '#afc836', ground: '#d29463' };
-                    const pill = el.closest('.type-pill');
-                    const color = TYPE_SECOND_COLOR[t] || '#764ba2';
-                    if (pill) {
-                        pill.style.background = color;
-                        pill.style.color = '#06221a';
-                    }
-                } catch (e) {}
-            }
-
-            // buscar as fraquezas para os tipos do Pokémon e renderizá-las
-            const weakWrap = detailWrap.querySelector('.weak-list');
-            if (!weakWrap) return;
-            try {
-                // Multiplica as relacoes dos dois tipos, incluindo imunidades.
-                const multipliers = Object.create(null);
-                for (const t of types) {
-                    const tr = await fetchJson(`${API}/type/${t}`);
-                    if (!tr || !tr.damage_relations) throw new Error('Tipo indisponivel');
-                    for (const [relation, factor] of [['double_damage_from', 2], ['half_damage_from', 0.5], ['no_damage_from', 0]]) {
-                        for (const damageType of tr.damage_relations[relation] || []) {
-                            multipliers[damageType.name] = (multipliers[damageType.name] ?? 1) * factor;
-                        }
-                    }
-                }
-                const weaknessArr = Object.keys(multipliers).filter(type => multipliers[type] > 1);
-
-                // renderizar as pílulas com emblema circular + nome
-                weakWrap.innerHTML = weaknessArr.map(w => `<span class="type-pill weak" data-type="${w}"><span class="type-badge glyph" data-type="${w}"></span><span class="type-name">${Interface.tipo(w)}</span><strong class="damage-multiplier">×${multipliers[w]}</strong></span>`).join(' ');
-
-                // inserir os ícones inline e colorí-los (emblema)
-                const weakIcons = weakWrap.querySelectorAll('.type-pill');
-                for (const node of weakIcons) {
-                    const t = node.getAttribute('data-type');
-                    const url = `../assets/types/tipos-desenho/${t}.svg`;
-                    try {
-                        const res = await fetch(url);
-                        if (!res.ok) throw new Error('not ok ' + res.status);
-                        const svgText = await res.text();
-                        const iconEl = node.querySelector('.type-badge');
-                        if (iconEl) iconEl.innerHTML = svgText;
-                    } catch (err) {
-                        // ignore
-                    }
-                    try {
-                        const TYPE_SECOND_COLOR = { water: '#6cbde4', ice: '#8cddd4', rock: '#d7cd90', steel: '#58a6aa', normal: '#a3a49e', poison: '#c261d4', psychic: '#fe9f92', fighting: '#e74347', fire: '#fbae46', flying: '#a6c2f2', ghost: '#7773d4', grass: '#5ac178', electric: '#fbe273', fairy: '#f3a7e7', dark: '#6e7587', dragon: '#0180c7', bug: '#afc836', ground: '#d29463' };
-                        const color = TYPE_SECOND_COLOR[t] || '#764ba2';
-                        node.style.background = color;
-                        node.style.color = '#06221a';
-                        const badge = node.querySelector('.type-badge');
-                        if (badge) badge.style.background = 'rgba(255,255,255,0.12)';
-                    } catch (e) {}
-                }
-            } catch (err) {
-                weakWrap.textContent = 'Não foi possível consultar as fraquezas.';
-                console.warn('weakness fetch failed', err);
-            }
-        }
-
-        inlineTypeIcons();
-
-        // animar o preenchimento dos status após inserir os ícones inline (espelhar o comportamento do comparador)
-        try {
-            const fills = detailWrap.querySelectorAll('.stat-fill');
-            fills.forEach((el, idx) => {
-                const pct = el.getAttribute('data-pct') || '0';
-                setTimeout(() => { el.style.width = pct + '%'; }, 80 + idx * 80);
-            });
-        } catch (e) {}
-
-        // botão de voltar
-        const backBtn = document.getElementById('backBtn');
-        if (backBtn) backBtn.addEventListener('click', () => history.back());
+          }),
+        );
+        entries.push(...batch);
+        offset += batch.length;
+        display();
+        button.hidden = offset >= all.length;
+      } catch (e) {
+        document.querySelector("#movesStatus").textContent = e.message;
+      } finally {
+        busy = false;
+        button.disabled = false;
+        button.textContent = "Carregar mais golpes";
+      }
     }
-
-    const id = getQueryParam('id') || getQueryParam('name');
-    if (!id) {
-        detailWrap.innerHTML = '<p style="color:white; text-align:center;">Nenhum Pokémon selecionado. Volte para a Pokédex e escolha um Pokémon.</p>';
-        return;
-    }
-
-    loadPokemon(id);
+    search.oninput = display;
+    button.onclick = load;
+    load();
+  }
+  start();
 });
-
-
-const loginBtn = document.querySelector(".login-btn");
-
-const loggedUser = localStorage.getItem("loggedUser");
-
-if (loggedUser) {
-    if (loginBtn) {
-        const userData = JSON.parse(localStorage.getItem(loggedUser));
-        loginBtn.textContent = userData.username;
-    }
-}

@@ -1,0 +1,136 @@
+:root {
+  color-scheme: light;
+}
+.account {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 290px;
+}
+.theme-toggle {
+  order: -1;
+  width: 40px;
+  height: 40px;
+}
+.theme-toggle .ui-icon {
+  width: 22px;
+  height: 22px;
+}
+.activity-tabs .button[aria-pressed="false"] {
+  background: #48566e;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #202a3b;
+  --ink: #eff3fb;
+  --muted: #b7c3d6;
+  --shadow: 0 8px 0 #080e1922, 0 15px 35px #0005;
+}
+[data-theme="dark"] .header {
+  background: #182130f5;
+}
+[data-theme="dark"] .brand > img,
+[data-theme="dark"] .nav-item img {
+  filter: invert(1);
+  mix-blend-mode: screen;
+}
+[data-theme="dark"] .nav-item.active:after {
+  background: var(--yellow);
+}
+[data-theme="dark"] .hero-description {
+  color: var(--ink);
+}
+[data-theme="dark"] .icon-button {
+  color: var(--ink);
+}
+[data-theme="dark"] .icon-button:hover {
+  background: #3b4962;
+}
+[data-theme="dark"] .search-field,
+[data-theme="dark"] .suggestions,
+[data-theme="dark"] .section-heading select,
+[data-theme="dark"] .sort-control select,
+[data-theme="dark"] #authForm input,
+[data-theme="dark"] .move-controls input,
+[data-theme="dark"] .move-controls select {
+  background: #121d2d;
+  color: var(--ink);
+  border-color: #56647a;
+}
+[data-theme="dark"] .search-field input,
+[data-theme="dark"] .type-search input,
+[data-theme="dark"] .search-field > span,
+[data-theme="dark"] .suggestions small {
+  color: var(--ink);
+}
+[data-theme="dark"] .search-field input::placeholder,
+[data-theme="dark"] input::placeholder {
+  color: #aab7ca;
+}
+[data-theme="dark"] .suggestions li[role="option"] {
+  border-color: #344158;
+}
+[data-theme="dark"] .suggestions li[aria-selected="true"],
+[data-theme="dark"] .suggestions li[role="option"]:hover {
+  background: #354564;
+}
+[data-theme="dark"] .type-search,
+[data-theme="dark"] .filter-summary button,
+[data-theme="dark"] .team-slot,
+[data-theme="dark"] .matchup-panel {
+  background: #303f56;
+  color: var(--ink);
+}
+[data-theme="dark"] .type-item {
+  color: var(--ink);
+}
+[data-theme="dark"] .type-item:hover {
+  background: #35435a;
+}
+[data-theme="dark"] .type-item[aria-pressed="true"] {
+  background: #35456c;
+  border-color: #91a4ff;
+}
+[data-theme="dark"] .board-header .eyebrow,
+[data-theme="dark"] .board-header p:last-child,
+[data-theme="dark"] .filter-summary,
+[data-theme="dark"] .local-notice {
+  color: var(--muted);
+}
+[data-theme="dark"] .compare-empty {
+  background: #26344b;
+  color: var(--muted);
+}
+[data-theme="dark"] .quiz-stage {
+  background: radial-gradient(ellipse, #556d7b, #2e4058);
+}
+[data-theme="dark"] .skeleton {
+  background: linear-gradient(100deg, #29364b 25%, #40506a 50%, #29364b 75%);
+}
+[data-theme="dark"] .switch-auth button,
+[data-theme="dark"] .password-field button {
+  color: #c5d1ff;
+}
+@media (max-width: 620px) {
+  .account {
+    flex-direction: column;
+    gap: 5px;
+    max-width: 105px;
+  }
+  .theme-toggle {
+    order: 1;
+    width: 32px;
+    height: 32px;
+    box-shadow: none;
+  }
+  .theme-toggle .ui-icon {
+    width: 19px;
+    height: 19px;
+  }
+}
+@media (max-width: 359px) {
+  .account {
+    max-width: 84px;
+  }
+}

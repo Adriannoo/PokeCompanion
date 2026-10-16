@@ -1,168 +1,121 @@
-//----------------------------------------------------
-// ELEMENTOS DA TELA DE LOGIN/REGISTRO
-//----------------------------------------------------
-const authBox = document.getElementById('authBox');
-const authForm = document.getElementById('authForm');
-const authTitle = document.getElementById('authTitle');
-const authBtn = document.getElementById('authBtn');
-const switchText = document.getElementById('switchText');
-const switchLink = document.getElementById('switchLink');
-const emailField = document.getElementById('emailField');
-
-let isLogin = true; // estado inicial
-
-//----------------------------------------------------
-// TROCAR LOGIN <-> REGISTRO
-//----------------------------------------------------
-switchLink.addEventListener('click', (e) => {
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.querySelector("#authForm"),
+    button = document.querySelector("#authBtn"),
+    password = document.querySelector("#password");
+  let register = false;
+  function mode(value) {
+    register = value;
+    document.querySelector("#authTitle").textContent = value
+      ? "Criar conta"
+      : "Fazer login";
+    button.textContent = value ? "Cadastrar" : "Entrar";
+    document.querySelector("#emailField").hidden = !value;
+    document.querySelector("#email").required = value;
+    document.querySelector("#switchText").textContent = value
+      ? "Já tem uma conta?"
+      : "Não tem uma conta?";
+    document.querySelector("#switchAuth").textContent = value
+      ? "Fazer login"
+      : "Criar conta";
+    password.autocomplete = value ? "new-password" : "current-password";
+    password.minLength = value ? 6 : 1;
+    const usernameInput = document.querySelector("#username");
+    usernameInput.minLength = value ? 3 : 1;
+    usernameInput.maxLength = value ? 30 : 80;
+    if (value) usernameInput.pattern = "[a-zA-Z0-9_-]+";
+    else usernameInput.removeAttribute("pattern");
+    Interface.mensagem("");
+  }
+  document.querySelector("#switchAuth").onclick = () => {
+    form.reset();
+    mode(!register);
+  };
+  document.querySelector("#showPassword").onclick = (e) => {
+    const show = password.type === "password";
+    password.type = show ? "text" : "password";
+    e.currentTarget.textContent = show ? "Ocultar" : "Mostrar";
+    e.currentTarget.setAttribute("aria-pressed", String(show));
+  };
+  async function hash(text, salt) {
+    const key = await crypto.subtle.importKey(
+      "raw",
+      new TextEncoder().encode(text),
+      "PBKDF2",
+      false,
+      ["deriveBits"],
+    );
+    const bytes = await crypto.subtle.deriveBits(
+      {
+        name: "PBKDF2",
+        salt: new Uint8Array(salt),
+        iterations: 100000,
+        hash: "SHA-256",
+      },
+      key,
+      256,
+    );
+    return [...new Uint8Array(bytes)]
+      .map((v) => v.toString(16).padStart(2, "0"))
+      .join("");
+  }
+  form.onsubmit = async (e) => {
     e.preventDefault();
-    isLogin = !isLogin;
-
-    if (isLogin) {
-        authTitle.textContent = 'Login';
-        authBtn.textContent = 'Entrar';
-        switchText.textContent = 'Não tem uma conta?';
-        switchLink.textContent = 'Registre-se';
-        emailField.style.display = 'none';
-    } else {
-        authTitle.textContent = 'Registrar';
-        authBtn.textContent = 'Registrar';
-        switchText.textContent = 'Já possui uma conta?';
-        switchLink.textContent = 'Faça login';
-        emailField.style.display = 'block';
-    }
-
-    authForm.reset();
-    Interface.mensagem('');
-});
-
-//----------------------------------------------------
-// SUBMISSÃO DO LOGIN/REGISTRO
-//----------------------------------------------------
-authForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const email = document.getElementById('email').value.trim();
-    const username = document.getElementById('username').value.trim();
-    const password = document.getElementById('password').value.trim();
-
-    //---------------------------
-    // REGISTRO
-    //---------------------------
-    if (!isLogin) {
-        if (!email.includes("@")) {
-            Interface.mensagem("Digite um e-mail válido!");
-            return;
+    if (button.disabled) return;
+    const username = document.querySelector("#username").value.trim(),
+      text = password.value,
+      email = document.querySelector("#email").value.trim();
+    if (
+      register &&
+      (!/^[a-zA-Z0-9_-]{3,30}$/.test(username) ||
+        ["loggedUser", "pokemonsComparados"].includes(username))
+    )
+      return Interface.mensagem(
+        "Use um nome de usuário válido, com 3 a 30 caracteres.",
+      );
+    button.disabled = true;
+    try {
+      if (register) {
+        if (Store.read(username)) throw new Error("Este usuário já existe.");
+        if (!crypto.subtle)
+          throw new Error(
+            "Abra o projeto em localhost ou HTTPS para criar uma conta.",
+          );
+        const salt = [...crypto.getRandomValues(new Uint8Array(16))],
+          digest = await hash(text, salt);
+        if (!Store.write(username, { username, email, salt, digest }))
+          throw new Error("O navegador não permitiu salvar a conta.");
+        form.reset();
+        mode(false);
+        Interface.mensagem("Conta criada. Agora você pode entrar.", "success");
+      } else {
+        const data = Store.read(username);
+        if (!data || data.username !== username)
+          throw new Error("Usuário não encontrado.");
+        const valid = data.digest
+          ? (await hash(text, data.salt)) === data.digest
+          : data.password === text.trim();
+        if (!valid) throw new Error("Senha incorreta.");
+        if (!data.digest && crypto.subtle) {
+          const salt = [...crypto.getRandomValues(new Uint8Array(16))];
+          Store.write(username, {
+            username,
+            email: data.email,
+            salt,
+            digest: await hash(text, salt),
+          });
         }
-
-        if (localStorage.getItem(username)) {
-            Interface.mensagem("Usuário já existe!");
-            return;
+        try {
+          localStorage.setItem("loggedUser", username);
+        } catch {
+          throw new Error("O navegador não permitiu iniciar a sessão.");
         }
-
-        const userData = { email, username, password };
-        localStorage.setItem(username, JSON.stringify(userData));
-
-        Interface.mensagem("Registro realizado. Agora faça login.", "success");
-
-        isLogin = true;
-        authTitle.textContent = 'Login';
-        authBtn.textContent = 'Entrar';
-        switchText.textContent = 'Não tem uma conta?';
-        switchLink.textContent = 'Registre-se';
-        emailField.style.display = 'none';
-
-        authForm.reset();
-        return;
+        location.href = Session.returnUrl();
+      }
+    } catch (error) {
+      Interface.mensagem(error.message);
+    } finally {
+      button.disabled = false;
     }
-
-    //---------------------------
-    // LOGIN
-    //---------------------------
-    const stored = localStorage.getItem(username);
-
-    if (!stored) {
-        Interface.mensagem("Usuário não encontrado!");
-        return;
-    }
-
-    const userData = JSON.parse(stored);
-
-    if (userData.password !== password) {
-        Interface.mensagem("Senha incorreta!");
-        return;
-    }
-
-    localStorage.setItem("loggedUser", username);
-
-    window.location.href = "pagina-inicial.html";
-});
-
-//----------------------------------------------------
-// HEADER - BOTÃO DO USUÁRIO
-//----------------------------------------------------
-const loginBtn = document.querySelector(".login-btn");
-const userMenu = document.getElementById("userMenu");
-const logoutBtn = document.getElementById("logoutBtn");
-
-const loggedUser = localStorage.getItem("loggedUser");
-
-// Se estiver logado, trocar botão por nome
-if (loggedUser && loginBtn) {
-    const userData = JSON.parse(localStorage.getItem(loggedUser));
-    loginBtn.textContent = userData.username;
-}
-
-//----------------------------------------------------
-// POSICIONAMENTO EXATO DO MENU
-//----------------------------------------------------
-function positionUserMenu() {
-    const rect = loginBtn.getBoundingClientRect();
-
-    const buttonTop = rect.top + window.scrollY;
-    const buttonLeft = rect.left + window.scrollX;
-
-    userMenu.style.top = (buttonTop + rect.height + 4) + "px";
-    userMenu.style.left = buttonLeft + "px";
-}
-
-//----------------------------------------------------
-// ABRIR / FECHAR MENU
-//----------------------------------------------------
-if (loggedUser) {
-    const userData = JSON.parse(localStorage.getItem(loggedUser));
-    loginBtn.textContent = userData.username;
-
-    // impede mudança de página
-    loginBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-
-        // reposiciona antes de abrir
-        positionUserMenu();
-
-        userMenu.style.display =
-            userMenu.style.display === "block" ? "none" : "block";
-    });
-}
-
-//----------------------------------------------------
-// LOGOUT
-//----------------------------------------------------
-logoutBtn.addEventListener("click", () => {
-    localStorage.removeItem("loggedUser");
-
-    loginBtn.textContent = "Fazer login";
-
-    userMenu.style.display = "none";
-
-    window.location.href = "login.html";
-});
-
-//----------------------------------------------------
-// FECHAR MENU AO CLICAR FORA
-//----------------------------------------------------
-document.addEventListener("click", (e) => {
-    if (!loginBtn.contains(e.target) && !userMenu.contains(e.target)) {
-        userMenu.style.display = "none";
-    }
+  };
+  mode(false);
 });

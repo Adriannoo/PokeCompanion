@@ -1,109 +1,234 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PokéCompanion</title>
-    <link rel="stylesheet" href="../css/pagina-inicial.css">
-    <link rel="stylesheet" href="../css/styleguide.css">
-    <link rel="icon" type="imagem/jpg" href="../assets/icone1.png">
-    <link rel="stylesheet" href="../css/layout.css?v=7">
-</head>
-<body class="page-home">
-
-    <!-- Header -->
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="Explore Pokémon, compare atributos e descubra evoluções no PokéCompanion."
+    />
+    <title>Início · PokéCompanion</title>
+    <link rel="icon" href="../assets/pokeball-icon.svg" />
+    <link rel="stylesheet" href="../css/styleguide.css" />
+    <link rel="stylesheet" href="../css/layout.css" />
+    <link rel="stylesheet" href="../css/pagina-inicial.css" />
+    <link rel="stylesheet" href="../css/tema.css" />
+    <script src="../js/tema.js"></script>
+  </head>
+  <body class="page-home">
+    <a class="skip-link" href="#main">Pular para o conteúdo</a>
     <header class="header">
-        <nav class="nav">
-
-            <!-- Página inicial -->
-            <a class="nav-item" href="pagina-inicial.html">
-                <div class="nav-icon icon-1"></div>
-                <span>Página Inicial</span>
-            </a>
-
-            <!-- Pokédex -->
-            <a class="nav-item" href="pokedex.html">
-                <div class="nav-icon icon-2"></div>
-                <span>Pokédex</span>
-            </a>
-
-            <!-- Comparador -->
-            <a class="nav-item" href="comparador.html">
-                <div class="nav-icon icon-3"></div>
-                <span>Comparar</span>
-            </a>
-
-            <!-- Botão LOGIN / NOME DO USUÁRIO -->
-            <a class="login-btn" href="login.html">
-                <span>Fazer login</span>
-            </a>
-
-            <!-- MENU DO USUÁRIO (dropdown) -->
-            <div class="user-menu" id="userMenu" style="display:none;">
-                <button id="logoutBtn">Sair</button>
-            </div>
-
-        </nav>
+      <nav class="nav" aria-label="Navegação principal">
+        <a class="brand" href="pagina-inicial.html"
+          ><img src="../assets/pokeball-icon.svg" alt="" /><span
+            >Poké<span>Companion</span></span
+          ></a
+        >
+        <div class="nav-links">
+          <a
+            class="nav-item active"
+            href="pagina-inicial.html"
+            aria-current="page"
+            ><img src="../assets/icone1.png" alt="" /><span
+              >Página Inicial</span
+            ></a
+          ><a class="nav-item" href="pokedex.html"
+            ><img src="../assets/icone2.png" alt="" /><span>Pokédex</span></a
+          ><a class="nav-item" href="comparador.html"
+            ><img src="../assets/icone3.png" alt="" /><span>Comparar</span></a
+          >
+        </div>
+        <div class="account">
+          <a class="login-btn button" href="login.html">Fazer login</a>
+          <div id="userMenu" class="user-menu" hidden>
+            <p>Conta local</p>
+            <button id="logoutBtn" class="button">Sair</button>
+          </div>
+        </div>
+      </nav>
     </header>
-
-    <!-- Listras de Fundo -->
-    <div class="background-container">
-        <div class="stripe yellow-stripe"></div>
-        <div class="stripe blue-stripe"></div>
-        <div class="stripe red-stripe"></div>
-    </div>
-
-    <!-- Conteúdo Principal -->
-    <div class="main-content">
-
-        <!-- Sprite Blastoise -->
-        <div class="blastoise-wrap">
-            <div class="blastoise-base" aria-hidden="true"></div>
-            <img id="blastoise-gif" class="blastoise-gif" alt="Blastoise">
+    <div class="background-container" aria-hidden="true"></div>
+    <main id="main">
+      <div id="feedback" hidden tabindex="-1"></div>
+      <section class="home-hero content-width">
+        <div class="hero-copy">
+          <p class="eyebrow">Explore o mundo Pokémon</p>
+          <h1>Poké<span>Companion</span></h1>
+          <p class="hero-description">
+            Uma plataforma feita por fãs, para fãs. Descubra Pokémon, conheça
+            suas evoluções e compare seus favoritos em um só lugar.
+          </p>
+          <div class="hero-actions">
+            <a class="button" href="pokedex.html"
+              >Explorar Pokédex <span data-icon="arrow"></span></a
+            ><a class="button button-secondary" href="comparador.html"
+              >Comparar Pokémon</a
+            >
+          </div>
+          <div class="hero-shortcuts">
+            <a href="#regioes">Iniciais por região</a
+            ><a href="#atividades">Equipe e quiz</a>
+          </div>
         </div>
-
-        <!-- Frame Sobre -->
-        <div class="frame-sobre">
-            <div class="frame-sobre-text">
-                O PokéCompanion é uma plataforma feita por fãs, para fãs, 
-                que reúne tudo sobre o mundo Pokémon em um só lugar.
+        <div class="carousel-section">
+          <p class="eyebrow carousel-caption">Encontre seu próximo favorito</p>
+          <div
+            id="orbit"
+            class="orbit"
+            role="region"
+            aria-label="Esteira de Pokémon"
+          >
+            <div class="loading">Preparando a esteira…</div>
+          </div>
+          <div class="orbit-controls">
+            <button
+              class="icon-button"
+              id="orbitPrevious"
+              aria-label="Pokémon anterior"
+              data-icon="left"
+            ></button>
+            <div id="orbitInfo" class="orbit-info" aria-live="polite"></div>
+            <button
+              class="icon-button"
+              id="orbitNext"
+              aria-label="Próximo Pokémon"
+              data-icon="right"
+            ></button
+            ><button
+              class="icon-button orbit-pause"
+              id="orbitPause"
+              aria-label="Pausar rotação automática"
+              aria-pressed="false"
+              data-icon="pause"
+            ></button>
+          </div>
+          <a id="orbitDetails" class="orbit-details" href="pokedex.html"
+            >Ver detalhes <span data-icon="arrow"></span
+          ></a>
+        </div>
+      </section>
+      <div class="home-content content-width">
+        <section class="content-panel" id="regioes">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Comece sua jornada</p>
+              <h2>Iniciais por região</h2>
             </div>
-        </div>
-
-    </div>
-
-    <!-- Footer -->
+            <select id="regionSelect" aria-label="Região">
+              <option value="kanto">Kanto</option>
+              <option value="johto">Johto</option>
+              <option value="hoenn">Hoenn</option>
+              <option value="sinnoh">Sinnoh</option>
+              <option value="unova">Unova</option>
+              <option value="kalos">Kalos</option>
+              <option value="alola">Alola</option>
+              <option value="galar">Galar</option>
+              <option value="paldea">Paldea</option>
+            </select>
+          </div>
+          <div id="starters" class="small-grid"></div>
+        </section>
+        <section class="content-panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Encontre pelo elemento</p>
+              <h2>Explore os tipos</h2>
+            </div>
+            <a href="pokedex.html">Ver todos →</a>
+          </div>
+          <div id="homeTypes" class="home-types"></div>
+        </section>
+        <section class="content-panel" id="recentSection" hidden>
+          <div class="section-heading"><h2>Vistos recentemente</h2></div>
+          <div id="recentPokemon" class="recent-grid"></div>
+        </section>
+        <section class="content-panel" id="atividades">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Explore mais</p>
+              <h2>Sua equipe e seus desafios</h2>
+            </div>
+          </div>
+          <div class="activity-tabs" role="group" aria-label="Atividade">
+            <button class="button" id="teamTab" aria-pressed="true">
+              <span data-icon="team"></span> Minha equipe</button
+            ><button
+              class="button button-secondary"
+              id="quizTab"
+              aria-pressed="false"
+            >
+              <span data-icon="quiz"></span> Quem é esse Pokémon?
+            </button>
+          </div>
+          <div id="teamActivity">
+            <p>
+              Monte uma equipe de até seis Pokémon. O resumo considera somente
+              os tipos, sem habilidades, itens ou regras de batalha.
+            </p>
+            <form class="search-container" role="search">
+              <div class="search-field">
+                <span data-icon="search"></span
+                ><input
+                  id="teamSearch"
+                  type="search"
+                  aria-label="Nome ou número do Pokémon"
+                  placeholder="Nome ou número do Pokémon"
+                  maxlength="80"
+                />
+              </div>
+              <button class="button search-btn" type="submit">Adicionar</button>
+            </form>
+            <div id="teamSlots" class="team-slots"></div>
+            <div id="teamSummary" class="team-summary"></div>
+            <button
+              class="button button-secondary"
+              id="clearTeam"
+              type="button"
+            >
+              Limpar equipe
+            </button>
+          </div>
+          <div id="quizActivity" hidden>
+            <div class="quiz-top">
+              <p id="quizScore">Pontuação: 0</p>
+              <p id="quizRecord"></p>
+            </div>
+            <div id="quizStage" class="quiz-stage">
+              <button class="button" id="startQuiz">Iniciar desafio</button>
+            </div>
+            <div id="quizOptions" class="quiz-options"></div>
+            <p id="quizFeedback" role="status"></p>
+            <button class="button" id="nextQuiz" hidden>Próximo Pokémon</button>
+          </div>
+        </section>
+      </div>
+    </main>
     <footer class="footer">
-        <div class="footer-left">
-            <div class="footer-brand">PokéCompanion</div>
-
-            <div class="footer-links">
-                <h4>Links</h4>
-                <ul>
-                    <li><a href="pagina-inicial.html">Pagina Inicial</a></li>
-                    <li><a href="pokedex.html">Pokédex</a></li>
-                    <li><a href="comparador.html">Comparar</a></li>
-                </ul>
-            </div>
+      <div>
+        <a class="footer-brand" href="pagina-inicial.html">PokéCompanion</a>
+        <p>Projeto acadêmico feito por fãs de Pokémon.</p>
+        <div class="footer-links">
+          <a href="pagina-inicial.html">Início</a
+          ><a href="pokedex.html">Pokédex</a
+          ><a href="comparador.html">Comparar</a>
         </div>
-
-        <div class="footer-divider"></div>
-
-        <div class="footer-right">
-            <h3>Sobre</h3>
-            <p class="footer-description">
-                Este site foi desenvolvido como parte de um projeto acadêmico de Engenharia de Software,
-                com objetivo de praticar prototipagem e desenvolvimento web.
-            </p>
-
-            <p class="footer-copyright">
-                PokéCompanion © 2025<br>
-                Projeto acadêmico — Engenharia de Software
-            </p>
-        </div>
+      </div>
+      <div>
+        <h2>Sobre o projeto</h2>
+        <p>
+          Desenvolvido para praticar interfaces web e consumo da PokéAPI.
+          Pokémon e seus personagens pertencem aos respectivos titulares.
+        </p>
+        <small
+          >Login, favoritos, equipe e pontuações são demonstrativos e locais a
+          este navegador.</small
+        >
+      </div>
     </footer>
-
-    <!-- Script principal -->
-    <script src="../js/pagina-inicial.js"></script>
-</body>
+    <script src="../js/dados.js" defer></script>
+    <script src="../js/interface.js" defer></script>
+    <script src="../js/favoritos.js" defer></script>
+    <script src="../js/pagina-inicial.js" defer></script>
+    <script src="../js/atividades.js" defer></script>
+  </body>
 </html>

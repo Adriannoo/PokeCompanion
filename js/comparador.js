@@ -1,221 +1,166 @@
-// =============================
-// LÓGICA DO COMPARADOR
-// =============================
-const apiURL = "https://pokeapi.co/api/v2/pokemon/";
-let pokemonsSelecionados = [];
-
-const input = document.getElementById("pokemonSearch");
-const addBtn = document.getElementById("addPokemonBtn");
-const cards = [document.getElementById("pokemon1"), document.getElementById("pokemon2")];
-
-// Carregar do localStorage
-window.addEventListener("load", () => {
-  const salvos = JSON.parse(localStorage.getItem("pokemonsComparados")) || [];
-  pokemonsSelecionados = salvos;
-  atualizarCards();
-});
-
-// Busca sem alertas que interrompem a navegação.
-addBtn.addEventListener('click', async () => {
-  const nome = input.value.trim().toLowerCase();
-  if (!nome) return Interface.mensagem('Digite o nome ou número de um Pokémon.');
-  if (pokemonsSelecionados.length >= 2) return Interface.mensagem('Limite de dois Pokémon. Remova um para continuar.');
-  addBtn.disabled = true;
-  addBtn.textContent = 'Buscando...';
-  Interface.mensagem('Consultando Pokémon...', 'info');
-  try {
-    const res = await fetch(apiURL + encodeURIComponent(nome));
-    if (!res.ok) throw new Error('Pokémon não encontrado. Confira o nome ou número.');
-    const data = await res.json();
-    if (pokemonsSelecionados.some(p => p.id === data.id)) {
-      Interface.mensagem('Esse Pokémon já está na comparação.');
-      return;
-    }
-    pokemonsSelecionados.push(data);
-    localStorage.setItem('pokemonsComparados', JSON.stringify(pokemonsSelecionados));
-    atualizarCards();
-    input.value = '';
-    Interface.mensagem('Pokémon adicionado à comparação.', 'success');
-  } catch (error) {
-    Interface.mensagem(error.message === 'Failed to fetch' ? 'Não foi possível consultar. Verifique sua conexão.' : error.message);
-  } finally {
-    addBtn.disabled = false;
-    addBtn.textContent = 'Adicionar';
+document.addEventListener("DOMContentLoaded", () => {
+  const input = document.querySelector("#compareSearch"),
+    holder = document.querySelector("#compareCards"),
+    status = document.querySelector("#compareStatus");
+  const query = new URLSearchParams(location.search).get("ids");
+  const old = Store.read("pokemonsComparados", []);
+  let ids = query
+    ? query.split(",").map(Number)
+    : Store.read(
+        "poke.compare",
+        Array.isArray(old) ? old.map((p) => p.id) : [],
+      );
+  ids = Array.isArray(ids)
+    ? [...new Set(ids.filter((id) => Number.isInteger(id) && id > 0))].slice(
+        0,
+        2,
+      )
+    : [];
+  let version = 0,
+    adding = false;
+  function save() {
+    if (!Store.write("poke.compare", ids))
+      Interface.mensagem(
+        "Não foi possível salvar a comparação neste navegador.",
+      );
   }
-});
-input.addEventListener('keydown', event => {
-  if (event.key === 'Enter' && !addBtn.disabled) addBtn.click();
-});
-
-// helper
-function capitalize(s){ if(!s) return ''; return s.charAt(0).toUpperCase() + s.slice(1); }
-
-// Atualizar interface (renderiza cartão com gráfico horizontal de estatísticas, similar a sobre-pokemon)
-let renderVersion = 0;
-async function atualizarCards() {
-  const version = ++renderVersion;
-  cards.forEach(async (card, index) => {
-    const pokemon = pokemonsSelecionados[index];
-    if (!pokemon) {
-      card.innerHTML = `<p class="placeholder-text">Selecione um Pokémon</p>`;
-      return;
-    }
-
-    // ordenar estatísticas na ordem desejada
-    const order = ['hp','attack','defense','special-attack','special-defense','speed'];
-    const statsMap = {};
-    pokemon.stats.forEach(s => statsMap[s.stat.name] = s.base_stat);
-    const stats = order.map(k => ({ key: k, value: statsMap[k] || 0 }));
-
-    // Combina dano dos tipos: fraqueza x2, resistencia x0.5 e imunidade x0.
-    const multipliers = Object.create(null);
-    let damageAvailable = true;
+  function buttons() {
+    document.querySelector("#swapCompare").disabled = ids.length !== 2;
+    document.querySelector("#clearCompare").disabled = !ids.length;
+    document.querySelector("#shareCompare").disabled = ids.length !== 2;
+  }
+  async function render() {
+    const current = ++version;
+    buttons();
+    Interface.loading(holder);
+    document.querySelector("#matchup").hidden = true;
+    status.textContent = "";
     try {
-      for (const t of pokemon.types) {
-        const res = await fetch('https://pokeapi.co/api/v2/type/' + t.type.name);
-        if (!res.ok) throw new Error('Nao foi possivel consultar o tipo');
-        const tr = await res.json();
-        const relations = tr.damage_relations;
-        for (const [relation, factor] of [['double_damage_from', 2], ['half_damage_from', 0.5], ['no_damage_from', 0]]) {
-          for (const damageType of relations[relation] || []) {
-            multipliers[damageType.name] = (multipliers[damageType.name] ?? 1) * factor;
-          }
+      const pokemons = await Promise.all(ids.map(Poke.pokemon));
+      if (current !== version) return;
+      holder.replaceChildren();
+      for (let i = 0; i < 2; i++) {
+        const p = pokemons[i];
+        if (!p) {
+          const empty = document.createElement("div");
+          empty.className = "compare-empty";
+          empty.innerHTML =
+            '<img src="../assets/pokeball-icon.svg" alt=""><h2>Quem entra na comparação?</h2><p>Pesquise um nome ou número acima para preencher este espaço.</p>';
+          holder.append(empty);
+          continue;
         }
+        const card = document.createElement("article");
+        card.className = "compare-card";
+        card.style = Poke.tone(p);
+        card.innerHTML = `<button class="remove-btn" aria-label="Remover ${Poke.name(p.name)} da comparação">${Icons("close")}</button><div class="compare-stage"><a href="sobre-pokemon.html?id=${p.id}" aria-label="Ver detalhes de ${Poke.name(p.name)}"><img src="${Poke.sprite(p)}" alt="${Poke.name(p.name)}"><p class="pokemon-number">${Poke.number(p.id)}</p><h2>${Poke.name(p.name)}</h2></a><div class="pokemon-types">${Poke.badges(p)}</div></div><div class="compare-meta"><span>Altura: ${(p.height / 10).toLocaleString("pt-BR")} m</span><span>Peso: ${(p.weight / 10).toLocaleString("pt-BR")} kg</span></div><div class="mini-panel"><h3>Atributos base</h3>${Poke.statRows(p, pokemons[1 - i])}<div class="stat-total"><span>Total</span><strong>${p.stats.reduce((s, v) => s + v.base_stat, 0)}</strong></div></div><div class="mini-panel"><h3>Habilidades</h3><div class="abilities-list">Carregando…</div></div><div class="mini-panel"><h3>Fraquezas</h3><div class="pokemon-types weak-list">Carregando…</div><p class="comparison-note" style="color:#d8e1eb">Dano recebido por tipo, sem habilidades.</p></div>`;
+        card.append(Favoritos.criarBotao(p.id, p.name));
+        card.querySelector(".remove-btn").onclick = () => {
+          ids.splice(i, 1);
+          save();
+          render();
+        };
+        holder.append(card);
+        Poke.abilities(p)
+          .then((list) => {
+            if (current !== version) return;
+            card.querySelector(".abilities-list").innerHTML = list
+              .map(
+                (a) =>
+                  `<p>${Poke.escape(a.name)}${!a.translated ? " <small>Nome original</small>" : ""}${a.hidden ? " <small>Habilidade oculta</small>" : ""}</p>`,
+              )
+              .join("");
+          })
+          .catch(() => {
+            if (current === version)
+              card.querySelector(".abilities-list").textContent =
+                "Informações indisponíveis.";
+          });
+        Poke.damage(p)
+          .then((data) => {
+            if (current === version)
+              card.querySelector(".weak-list").innerHTML = Poke.damageBadges(
+                data,
+                (v) => v > 1,
+              );
+          })
+          .catch(() => {
+            if (current === version)
+              card.querySelector(".weak-list").textContent =
+                "Não foi possível consultar os tipos.";
+          });
       }
-    } catch (e) {
-      damageAvailable = false;
-      console.warn('Erro ao buscar fraquezas', e);
+      if (pokemons.length === 2) {
+        status.textContent =
+          "Os maiores valores de cada atributo aparecem em amarelo. “=” indica empate.";
+        const defense = await Promise.all(pokemons.map(Poke.damage));
+        if (current !== version) return;
+        const node = document.querySelector("#matchup");
+        node.hidden = false;
+        node.innerHTML =
+          '<h2>Relação entre os tipos</h2><div class="matchup-columns">' +
+          pokemons
+            .map(
+              (p, i) =>
+                `<div><h3>${Poke.name(p.name)} → ${Poke.name(pokemons[1 - i].name)}</h3><div class="pokemon-types">${p.types.map((t) => `<span class="type-badge" style="--badge:${Poke.colors[t.type.name]}">${Poke.types[t.type.name]} <strong>×${String(defense[1 - i][t.type.name]).replace(".", ",")}</strong></span>`).join("")}</div><p>Multiplicador defensivo antes de bônus, atributos, golpes e habilidades.</p></div>`,
+            )
+            .join("") +
+          "</div>";
+      }
+    } catch (error) {
+      if (current === version) Interface.error(holder, error, render);
     }
-    const weaknesses = Object.keys(multipliers).filter(type => multipliers[type] > 1);
-
-    if (version !== renderVersion) return;
-
-    // render HTML do cartão com gráfico horizontal (barras)
-    card.innerHTML = `
-      <button class="remove-btn" aria-label="Remover ${capitalize(pokemon.name)} da comparação" onclick="removerPokemon(${index})">×</button>
-      <div class="card-inner">
-        <div class="card-header">
-          <img class="pokemon-img" src="${pokemon.sprites.front_default}" alt="${pokemon.name}">
-          <h2 class="pokemon-title">#${pokemon.id.toString().padStart(4,'0')}<br><span class="pokemon-name">${pokemon.name.charAt(0).toUpperCase()+pokemon.name.slice(1)}</span></h2>
-          <div class="pokemon-meta">Altura: ${(pokemon.height/10).toFixed(1)}m &nbsp;|&nbsp; Peso: ${(pokemon.weight/10).toFixed(1)}kg</div>
-          <div class="pokemon-types">${pokemon.types.map(t=>`<span class="type-pill" data-type="${t.type.name}"><span class="type-icon" data-type="${t.type.name}"></span><span class="type-name">${Interface.tipo(t.type.name)}</span></span>`).join('')}</div>
-        </div>
-
-        <div class="mini-panel stats-panel">
-          <h3>Estatísticas</h3>
-          <ul class="stats-list">
-            ${stats.map(s => {
-              const pct = Math.min(100, Math.round((s.value / 180) * 100));
-              return `<li class="stat-row"><span class="stat-label">${Interface.stat(s.key)}</span><span class="stat-bar-wrap"><span class="stat-bar"><span class="stat-fill" data-pct="${pct}" style="width:0%"></span></span></span><span class="stat-value">${s.value}</span></li>`
-            }).join('')}
-          </ul>
-          <div class="stat-total">Total: ${stats.reduce((a,b)=>a+b.value,0)}</div>
-        </div>
-
-        <div class="mini-panel abilities-panel">
-          <h4>Habilidades</h4>
-          <ul>${pokemon.abilities.map(a=>`<li class="ability-item">${a.ability.name}</li>`).join('')}</ul>
-        </div>
-
-        <div class="mini-panel weaknesses-panel">
-          <h4>Fraquezas</h4><p class="damage-note">Dano recebido pelos tipos, sem habilidades.</p>
-          <div class="weak-list">${damageAvailable ? (weaknesses.length ? weaknesses.map(w=>`<span class="type-pill weak" data-type="${w}"><span class="type-badge glyph" data-type="${w}"></span><span class="type-name">${Interface.tipo(w)}</span><strong class="damage-multiplier">×${multipliers[w]}</strong></span>`).join('') : '<span class="muted">Sem fraquezas de tipo.</span>') : '<span class="muted">Não foi possível consultar as fraquezas.</span>'}</div>
-        </div>
-      </div>
-    `;
-
-    card.querySelector('.card-header').appendChild(Favoritos.criarBotao(pokemon.id, pokemon.name));
-
-    // após inserir, animar o preenchimento dos status (horizontal)
+  }
+  async function add() {
+    if (adding) return;
+    if (!input.value.trim())
+      return Interface.mensagem("Digite um nome ou número.");
+    if (ids.length >= 2)
+      return Interface.mensagem("Remova um Pokémon antes de adicionar outro.");
+    adding = true;
+    const button = document.querySelector(".search-btn");
+    button.disabled = true;
     try {
-      const fills = card.querySelectorAll('.stat-fill');
-      fills.forEach((el, idx) => {
-        const pct = el.getAttribute('data-pct') || '0';
-        setTimeout(() => { el.style.width = pct + '%'; }, 80 + idx * 80);
-      });
-    } catch (e) {}
-
-    // ícones SVG inline para badges de fraqueza e ‘pílulas’ de cor
-    try{
-      const TYPE_SECOND_COLOR = { water: '#6cbde4', ice: '#8cddd4', rock: '#d7cd90', 
-        steel: '#58a6aa', normal: '#a3a49e', poison: '#c261d4', psychic: '#fe9f92', 
-        fighting: '#e74347', fire: '#fbae46', flying: '#a6c2f2', ghost: '#7773d4', grass: '#5ac178', 
-        electric: '#fbe273', fairy: '#f3a7e7', dark: '#6e7587', dragon: '#0180c7', bug: '#afc836', 
-        ground: '#d29463' };
-      // ícones de tipos no cabeçalho
-      const headerIcons = card.querySelectorAll('.type-pill .type-icon');
-      for(const el of headerIcons){
-        const t = el.getAttribute('data-type');
-        const url = '../assets/types/tipos-desenho/'+t+'.svg';
-        try{ const res = await fetch(url); if(res.ok){ el.innerHTML = await res.text(); el.classList.add('has-svg'); } }catch(e){}
-      }
-      // emblemas de fraqueza
-      const weakBadges = card.querySelectorAll('.type-pill.weak');
-      for(const node of weakBadges){
-        const t = node.getAttribute('data-type');
-        const iconEl = node.querySelector('.type-badge');
-        try{ const res = await fetch('../assets/types/tipos-desenho/'+t+'.svg'); if(res.ok){ iconEl.innerHTML = await res.text(); } }catch(e){}
-        const color = TYPE_SECOND_COLOR[t] || '#764ba2';
-        node.style.background = color; node.style.color = '#06221a';
-        const badge = node.querySelector('.type-badge'); if(badge) badge.style.background = 'rgba(255,255,255,0.12)';
-      }
-    }catch(e){ console.warn('inline icons failed', e) }
-  });
-}
-
-// Remover Pokémon
-function removerPokemon(index) {
-  pokemonsSelecionados.splice(index, 1);
-  localStorage.setItem("pokemonsComparados", JSON.stringify(pokemonsSelecionados));
-  atualizarCards();
-  Interface.mensagem('Pokémon removido da comparação.', 'info');
-}
-
-
-// =============================
-// SISTEMA DE LOGIN (PADRÃO)
-// =============================
-
-const loginBtn = document.querySelector(".login-btn");
-const userMenu = document.getElementById("userMenu");
-const logoutBtn = document.getElementById("logoutBtn");
-
-const loggedUser = localStorage.getItem("loggedUser");
-
-if (loggedUser && loginBtn) {
-    const userData = JSON.parse(localStorage.getItem(loggedUser));
-    loginBtn.textContent = userData.username;
-
-    // Evita navegar para login
-    loginBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        positionUserMenu();
-        userMenu.style.display =
-            userMenu.style.display === "block" ? "none" : "block";
-    });
-}
-
-// Logout
-logoutBtn.addEventListener("click", () => {
-    localStorage.removeItem("loggedUser");
-    userMenu.style.display = "none";
-    window.location.href = "login.html";
-});
-
-// Fechar menu ao clicar fora
-document.addEventListener("click", (e) => {
-    if (!loginBtn.contains(e.target) && !userMenu.contains(e.target)) {
-        userMenu.style.display = "none";
+      const p = await Poke.pokemon(input.value);
+      if (ids.includes(p.id))
+        return Interface.mensagem("Esse Pokémon já está na comparação.");
+      ids.push(p.id);
+      save();
+      input.value = "";
+      Interface.mensagem("Pokémon adicionado.", "success");
+      render();
+    } catch (error) {
+      Interface.mensagem(error.message);
+    } finally {
+      adding = false;
+      button.disabled = false;
     }
+  }
+  Interface.suggestions(input, add);
+  document.querySelector(".search-container").onsubmit = (e) => {
+    e.preventDefault();
+    input.blur();
+    add();
+  };
+  document.querySelector("#swapCompare").onclick = () => {
+    ids.reverse();
+    save();
+    render();
+  };
+  document.querySelector("#clearCompare").onclick = () => {
+    ids = [];
+    save();
+    render();
+  };
+  document.querySelector("#shareCompare").onclick = async () => {
+    const url = new URL(location.href);
+    url.search = "";
+    url.searchParams.set("ids", ids.join(","));
+    try {
+      await navigator.clipboard.writeText(url.href);
+      status.textContent = "Link da comparação copiado.";
+    } catch {
+      status.textContent = "Copie este endereço: " + url.href;
+    }
+  };
+  render();
 });
-
-// Posicionamento do menu — exatamente abaixo do botão
-function positionUserMenu() {
-    const rect = loginBtn.getBoundingClientRect();
-
-    const top = rect.top + rect.height + window.scrollY + 4;
-    const left = rect.left + window.scrollX;
-
-    userMenu.style.top = top + "px";
-    userMenu.style.left = left + "px";
-}

@@ -1,166 +1,155 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokédex - PokéCompanion</title>
-    <link rel="stylesheet" href="../css/pokedex.css">
-    <link rel="stylesheet" href="../css/styleguide.css">
-    <link rel="icon" type="imagem/jpg" href="../assets/icone1.png">
-    <link rel="stylesheet" href="../css/layout.css?v=7">
-</head>
-<body class="page-pokedex">
-
-    <!-- Header -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="Explore Pokémon, compare atributos e descubra evoluções no PokéCompanion."
+    />
+    <title>Pokédex · PokéCompanion</title>
+    <link rel="icon" href="../assets/pokeball-icon.svg" />
+    <link rel="stylesheet" href="../css/styleguide.css" />
+    <link rel="stylesheet" href="../css/layout.css" />
+    <link rel="stylesheet" href="../css/pokedex.css" />
+    <link rel="stylesheet" href="../css/tema.css" />
+    <script src="../js/tema.js"></script>
+  </head>
+  <body class="page-pokedex">
+    <a class="skip-link" href="#main">Pular para o conteúdo</a>
     <header class="header">
-        <nav class="nav">
-            <a class="nav-item" href="pagina-inicial.html">
-                <div class="nav-icon icon-1"></div>
-                <span>Página Inicial</span>
-            </a>
-
-            <a class="nav-item">
-                <div class="nav-icon icon-2"></div>
-                <span>Pokédex</span>
-            </a>
-
-            <a class="nav-item" href="comparador.html">
-                <div class="nav-icon icon-3"></div>
-                <span>Comparar</span>
-            </a>
-
-            <!-- 🔥 Ajustado: botão agora segue o padrão correto -->
-            <a class="login-btn" href="login.html">
-                <span>Fazer login</span>
-            </a>
-
-            <!-- 🔥 Adicionado: menu de usuário (necessário p/ logout) -->
-            <div class="user-menu" id="userMenu" style="display:none;">
-                <button id="logoutBtn">Sair</button>
-            </div>
-
-        </nav>
+      <nav class="nav" aria-label="Navegação principal">
+        <a class="brand" href="pagina-inicial.html"
+          ><img src="../assets/pokeball-icon.svg" alt="" /><span
+            >Poké<span>Companion</span></span
+          ></a
+        >
+        <div class="nav-links">
+          <a class="nav-item" href="pagina-inicial.html"
+            ><img src="../assets/icone1.png" alt="" /><span
+              >Página Inicial</span
+            ></a
+          ><a class="nav-item active" href="pokedex.html" aria-current="page"
+            ><img src="../assets/icone2.png" alt="" /><span>Pokédex</span></a
+          ><a class="nav-item" href="comparador.html"
+            ><img src="../assets/icone3.png" alt="" /><span>Comparar</span></a
+          >
+        </div>
+        <div class="account">
+          <a class="login-btn button" href="login.html">Fazer login</a>
+          <div id="userMenu" class="user-menu" hidden>
+            <p>Conta local</p>
+            <button id="logoutBtn" class="button">Sair</button>
+          </div>
+        </div>
+      </nav>
     </header>
-
-
-    <!-- Container Principal -->
-    <div class="container">
-        
-        <!-- Background Stripes -->
-        <div class="background-container">
-            <div class="stripe stripe-yellow"></div>
-            <div class="stripe stripe-blue"></div>
-            <div class="stripe stripe-red"></div>
-        </div>
-
-        <!-- Sidebar -->
-        <div class="pokedex-layout">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h2>Explorar</h2>
-                <hr>
-            </div>
-            <button id="favoritesFilter" class="favorites-filter" type="button" aria-pressed="false">☆ Favoritos (0)</button>
-            <button class="filters-toggle" id="filtersToggle" type="button" aria-expanded="false" aria-controls="typeFilters">Mostrar tipos ▾</button>
-            <div class="types-grid" id="typeFilters">
-                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon water"></span><span>Água</span></button>
-                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon ice"></span><span>Gelo</span></button>
-                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon rock"></span><span>Pedra</span></button>
-                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon steel"></span><span>Metal</span></button>
-                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon normal"></span><span>Normal</span></button>
-                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon poison"></span><span>Veneno</span></button>
-                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon psychic"></span><span>Psíquico</span></button>
-                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon fighting"></span><span>Lutador</span></button>
-                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon fire"></span><span>Fogo</span></button>
-                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon flying"></span><span>Voador</span></button>
-                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon ghost"></span><span>Fantasma</span></button>
-                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon grass"></span><span>Planta</span></button>
-                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon electric"></span><span>Elétrico</span></button>
-                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon fairy"></span><span>Fada</span></button>
-                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon dark"></span><span>Sombrio</span></button>
-                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon dragon"></span><span>Dragão</span></button>
-                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon bug"></span><span>Inseto</span></button>
-                <button class="type-item" type="button" aria-pressed="false"><span class="type-icon ground"></span><span>Terrestre</span></button>
-            </div>
+    <div class="background-container" aria-hidden="true"></div>
+    <main id="main">
+      <div id="feedback" hidden tabindex="-1"></div>
+      <div class="pokedex-layout content-width">
+        <aside class="sidebar content-panel">
+          <div class="section-heading">
+            <h2>Explorar</h2>
+            <button
+              class="icon-button filters-toggle"
+              id="filtersToggle"
+              aria-expanded="false"
+              aria-controls="filtersBody"
+              data-icon="search"
+              aria-label="Mostrar filtros"
+            ></button>
+          </div>
+          <button
+            class="button favorites-filter"
+            id="favoritesFilter"
+            aria-pressed="false"
+          >
+            <span data-icon="star"></span> Favoritos
+            <span id="favoritesCount">0</span>
+          </button>
+          <div id="filtersBody">
+            <label class="type-search"
+              ><span data-icon="search"></span
+              ><input
+                id="typeSearch"
+                placeholder="Localizar tipo"
+                aria-label="Localizar tipo"
+            /></label>
+            <div id="typeFilters" class="types-grid"></div>
+          </div>
+          <div id="legacy-favorites" class="legacy-note" hidden>
+            <p>Há favoritos antigos sem conta associada.</p>
+            <button class="button button-secondary">
+              Importar para esta conta
+            </button>
+          </div>
         </aside>
-
-        <!-- Área Principal -->
-        <main class="main-content">
-            
-            <!-- Barra de Pesquisa -->
-            <div class="search-container">
-                <div class="search-bar">
-                    <span class="search-icon">🔍</span>
-                    <input type="text" aria-label="Nome ou número do Pokémon" placeholder="Nome ou número do Pokémon">
-                </div>
-                <button class="search-btn">Pesquisar</button>
+        <section class="pokemon-board content-panel">
+          <div class="board-header">
+            <div>
+              <p class="eyebrow">Encontre e conheça</p>
+              <h1>Pokédex</h1>
+              <p id="resultCount" role="status">Consultando catálogo…</p>
             </div>
-
-            <!-- Quadro de Pokémons -->
-            <div class="pokemon-board">
-                <div class="board-header">
-                    <div class="board-controls">
-                        <h3>Pokédex</h3>
-                        <div class="sort-select">
-                            <button class="sort-btn">
-                                <img src="../assets/pokeball-icon.svg" alt="Pokeball" class="pokeball-icon">
-                                <span class="sort-label">A - Z</span>
-                                <span class="arrow">▼</span>
-                            </button>
-                            <ul class="sort-options">
-                                <li data-sort="az"><button type="button">A - Z</button></li>
-                                <li data-sort="za"><button type="button">Z - A</button></li>
-                                <li data-sort="id-asc"><button type="button">Crescente</button></li>
-                                <li data-sort="id-desc"><button type="button">Decrescente</button></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Grid de Cards -->
-                <div class="pokemon-grid" aria-live="polite"></div>
-
-                <div style="text-align:center; margin-top:2vh;">
-                    <button class="load-more-btn">Carregar mais</button>
-                </div>
-
+            <label class="sort-control"
+              >Ordenar<select id="sortSelect">
+                <option value="id-asc">Número ↑</option>
+                <option value="id-desc">Número ↓</option>
+                <option value="az">Nome A–Z</option>
+                <option value="za">Nome Z–A</option>
+              </select></label
+            >
+          </div>
+          <form class="search-container" role="search">
+            <div class="search-field">
+              <span data-icon="search"></span
+              ><input
+                id="dexSearch"
+                type="search"
+                aria-label="Nome ou número do Pokémon"
+                placeholder="Nome ou número do Pokémon"
+                maxlength="80"
+              />
             </div>
-        </main>
+            <button class="button search-btn" type="submit">Pesquisar</button>
+          </form>
+          <div class="filter-summary">
+            <p id="activeFilter">Todos os tipos</p>
+            <button id="clearFilters" type="button">Limpar filtros ×</button>
+          </div>
+          <div class="pokemon-grid" id="pokemonGrid"></div>
+          <div class="load-more-row">
+            <button class="button" id="loadMore">Carregar mais</button>
+          </div>
+        </section>
+      </div>
+    </main>
+    <footer class="footer">
+      <div>
+        <a class="footer-brand" href="pagina-inicial.html">PokéCompanion</a>
+        <p>Projeto acadêmico feito por fãs de Pokémon.</p>
+        <div class="footer-links">
+          <a href="pagina-inicial.html">Início</a
+          ><a href="pokedex.html">Pokédex</a
+          ><a href="comparador.html">Comparar</a>
         </div>
-
-        <!-- Footer -->
-        <footer class="footer">
-            <div class="footer-left">
-                <div class="footer-brand">PokéCompanion</div>
-                <div class="footer-links">
-                    <h4>Links</h4>
-                    <ul>
-                        <li><a href="pagina-inicial.html">Pagina Inicial</a></li>
-                        <li><a href="pokedex.html">Pokédex</a></li>
-                        <li><a href="comparador.html">Comparar</a></li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="footer-divider"></div>
-            
-            <div class="footer-right">
-                <h3>Sobre</h3>
-                <p class="footer-description">
-                    Este site foi desenvolvido como parte de um projeto acadêmico de Engenharia de Software, 
-                    com objetivo de praticar prototipagem e desenvolvimento web.
-                </p>
-                <p class="footer-copyright">
-                    PokéCompanion &copy; 2025<br>
-                    Projeto acadêmico — Engenharia de Software
-                </p>
-            </div>
-        </footer>
-
-    </div>
-
-    <script src="../js/interface.js"></script>
-    <script src="../js/favoritos.js"></script>
-    <script src="../js/pokedex.js"></script>
-</body>
+      </div>
+      <div>
+        <h2>Sobre o projeto</h2>
+        <p>
+          Desenvolvido para praticar interfaces web e consumo da PokéAPI.
+          Pokémon e seus personagens pertencem aos respectivos titulares.
+        </p>
+        <small
+          >Login, favoritos, equipe e pontuações são demonstrativos e locais a
+          este navegador.</small
+        >
+      </div>
+    </footer>
+    <script src="../js/dados.js" defer></script>
+    <script src="../js/interface.js" defer></script>
+    <script src="../js/favoritos.js" defer></script>
+    <script src="../js/pokedex.js" defer></script>
+  </body>
 </html>

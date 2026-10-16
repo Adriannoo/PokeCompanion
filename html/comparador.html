@@ -1,113 +1,118 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Poké - Comparar Pokémons</title>
-    <link rel="stylesheet" href="../css/comparador.css">
-    <link rel="stylesheet" href="../css/styleguide.css">
-    <link rel="icon" type="imagem/jpg" href="../assets/icone1.png">
-    <link rel="stylesheet" href="../css/layout.css?v=7">
-</head>
-<body class="page-comparator">
-    <!-- Header -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="Explore Pokémon, compare atributos e descubra evoluções no PokéCompanion."
+    />
+    <title>Comparar · PokéCompanion</title>
+    <link rel="icon" href="../assets/pokeball-icon.svg" />
+    <link rel="stylesheet" href="../css/styleguide.css" />
+    <link rel="stylesheet" href="../css/layout.css" />
+    <link rel="stylesheet" href="../css/comparador.css" />
+    <link rel="stylesheet" href="../css/tema.css" />
+    <script src="../js/tema.js"></script>
+  </head>
+  <body class="page-comparator">
+    <a class="skip-link" href="#main">Pular para o conteúdo</a>
     <header class="header">
-        <nav class="nav">
-            <a class="nav-item" href="pagina-inicial.html">
-                <div class="nav-icon icon-1"></div>
-                <span>Página Inicial</span>
-            </a>
-
-            <a class="nav-item" href="pokedex.html">
-                <div class="nav-icon icon-2"></div>
-                <span>Pokédex</span>
-            </a>
-
-            <a class="nav-item">
-                <div class="nav-icon icon-3"></div>
-                <span>Comparar</span>
-            </a>
-
-            <!-- BOTÃO LOGIN / NOME DO USUÁRIO -->
-            <a class="login-btn" href="login.html">
-                <div class="nav-icon icon-4"></div>
-                <span>Fazer login</span>
-            </a>
-
-            <!-- MENU FLUTUANTE DO USUÁRIO -->
-            <div class="user-menu" id="userMenu" style="display:none;">
-                <button id="logoutBtn">Sair</button>
-            </div>
-        </nav>
+      <nav class="nav" aria-label="Navegação principal">
+        <a class="brand" href="pagina-inicial.html"
+          ><img src="../assets/pokeball-icon.svg" alt="" /><span
+            >Poké<span>Companion</span></span
+          ></a
+        >
+        <div class="nav-links">
+          <a class="nav-item" href="pagina-inicial.html"
+            ><img src="../assets/icone1.png" alt="" /><span
+              >Página Inicial</span
+            ></a
+          ><a class="nav-item" href="pokedex.html"
+            ><img src="../assets/icone2.png" alt="" /><span>Pokédex</span></a
+          ><a class="nav-item active" href="comparador.html" aria-current="page"
+            ><img src="../assets/icone3.png" alt="" /><span>Comparar</span></a
+          >
+        </div>
+        <div class="account">
+          <a class="login-btn button" href="login.html">Fazer login</a>
+          <div id="userMenu" class="user-menu" hidden>
+            <p>Conta local</p>
+            <button id="logoutBtn" class="button">Sair</button>
+          </div>
+        </div>
+      </nav>
     </header>
-    
-    <!-- Background Stripes -->
-    <div class="background-container">
-        <div class="stripe stripe-yellow"></div>
-        <div class="stripe stripe-blue"></div>
-        <div class="stripe stripe-red"></div>
-    </div>
-
-    <!-- Title -->
-    <h1 class="page-title">Compare Pokémons</h1>
-
-    <!-- Main Content -->
-    <main class="main-content">
-        <p id="feedback" class="feedback" role="status" hidden></p>
-
-        <!-- Search Bar -->
-        <div class="search-bar">
-            <input type="text" id="pokemonSearch" aria-label="Nome ou número do Pokémon" placeholder="Digite o nome de um Pokémon..." class="search-input"/>
-            <button id="addPokemonBtn" class="add-btn">Adicionar</button>
+    <div class="background-container" aria-hidden="true"></div>
+    <main id="main">
+      <div id="feedback" hidden tabindex="-1"></div>
+      <section class="content-width compare-page">
+        <div class="page-heading">
+          <p class="eyebrow">Tipos, atributos e diferenças</p>
+          <h1>Comparar Pokémon</h1>
+          <p>Escolha dois Pokémon e explore os dados lado a lado.</p>
         </div>
-
-        <!-- Área de comparação -->
-        <div class="compare-container">
-            <div class="pokemon-card" id="pokemon1">
-                <p class="placeholder-text">Selecione um Pokémon</p>
+        <div class="content-panel">
+          <div class="compare-toolbar">
+            <form class="search-container" role="search">
+              <div class="search-field">
+                <span data-icon="search"></span
+                ><input
+                  id="compareSearch"
+                  type="search"
+                  aria-label="Nome ou número do Pokémon"
+                  placeholder="Nome ou número do Pokémon"
+                  maxlength="80"
+                />
+              </div>
+              <button class="button search-btn" type="submit">Adicionar</button>
+            </form>
+            <div class="compare-actions">
+              <button class="button button-secondary" id="swapCompare">
+                <span data-icon="shuffle"></span> Trocar lados</button
+              ><button class="button button-secondary" id="clearCompare">
+                Limpar</button
+              ><button class="button button-secondary" id="shareCompare">
+                <span data-icon="copy"></span> Copiar link
+              </button>
             </div>
-
-            <div class="divider-vertical"></div>
-
-            <div class="pokemon-card" id="pokemon2">
-                <p class="placeholder-text">Selecione um Pokémon</p>
-            </div>
+          </div>
+          <p id="compareStatus" class="inline-status" role="status"></p>
+          <div id="compareCards" class="compare-grid"></div>
+          <div class="matchup-panel" id="matchup" hidden></div>
+          <p class="comparison-note">
+            Atributos base e relações de tipo não determinam, sozinhos, o
+            resultado de uma batalha. Barras usam a mesma escala (0–255).
+          </p>
         </div>
+      </section>
     </main>
-
-    <!-- Footer -->
     <footer class="footer">
-        <div class="footer-left">
-            <div class="footer-brand">PokéCompanion</div>
-
-            <div class="footer-links">
-                <h4>Links</h4>
-                <ul>
-                    <li><a href="pagina-inicial.html">Pagina Inicial</a></li>
-                    <li><a href="pokedex.html">Pokédex</a></li>
-                    <li><a href="comparador.html">Comparar</a></li>
-                </ul>
-            </div>
+      <div>
+        <a class="footer-brand" href="pagina-inicial.html">PokéCompanion</a>
+        <p>Projeto acadêmico feito por fãs de Pokémon.</p>
+        <div class="footer-links">
+          <a href="pagina-inicial.html">Início</a
+          ><a href="pokedex.html">Pokédex</a
+          ><a href="comparador.html">Comparar</a>
         </div>
-
-        <div class="footer-divider"></div>
-
-        <div class="footer-right">
-            <h3>Sobre</h3>
-            <p class="footer-description">
-                Este site foi desenvolvido como parte de um projeto acadêmico de Engenharia de Software,
-                com objetivo de praticar prototipagem e desenvolvimento web.
-            </p>
-
-            <p class="footer-copyright">
-                PokéCompanion © 2025<br>
-                Projeto acadêmico — Engenharia de Software
-            </p>
-        </div>
+      </div>
+      <div>
+        <h2>Sobre o projeto</h2>
+        <p>
+          Desenvolvido para praticar interfaces web e consumo da PokéAPI.
+          Pokémon e seus personagens pertencem aos respectivos titulares.
+        </p>
+        <small
+          >Login, favoritos, equipe e pontuações são demonstrativos e locais a
+          este navegador.</small
+        >
+      </div>
     </footer>
-
-    <script src="../js/interface.js"></script>
-    <script src="../js/favoritos.js"></script>
-    <script src="../js/comparador.js"></script>
-</body>
+    <script src="../js/dados.js" defer></script>
+    <script src="../js/interface.js" defer></script>
+    <script src="../js/favoritos.js" defer></script>
+    <script src="../js/comparador.js" defer></script>
+  </body>
 </html>
